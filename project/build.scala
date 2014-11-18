@@ -10,7 +10,6 @@ object myBuild extends Build {
     lazy val mainProject = Project(
         id = "composer-restorer",
         base = file("."),
-        settings = Defaults.coreDefaultSettings ++ Seq(
-        )
+        settings = Defaults.coreDefaultSettings
     ).enablePlugins(PlayScala)
 }
