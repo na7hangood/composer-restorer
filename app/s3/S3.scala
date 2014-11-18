@@ -20,10 +20,12 @@ object S3 {
   lazy val secretKey: String = config.getString("AWS_SECRET_KEY").get
 
 
-  val credentials = new BasicAWSCredentials(accessKey, secretKey)
-  val s3Client = new AmazonS3Client(credentials)
+
+
 
   private def getSnapshot(id: String, timestamp: String, bucketName: String): S3Object = {
+    val credentials = new BasicAWSCredentials(accessKey, secretKey)
+    val s3Client = new AmazonS3Client(credentials)
     val key = id + "." + timestamp + ".json"
     val objectReq = new GetObjectRequest(bucketName, key)
     s3Client.getObject(objectReq)
