@@ -15,3 +15,4 @@ dist
 /.settings
 /.ensime
 /.ensime_cache/
+/conf/composer-restorer.conf
