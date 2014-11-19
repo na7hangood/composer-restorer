@@ -27,8 +27,14 @@ trait PanDomainAuthActions extends AuthActions {
 
 object Application extends Controller with PanDomainAuthActions {
 
-  def index = Action {
+  def index = AuthAction {
     Ok(views.html.Application.index())
+  }
+
+  def find(url: String) = AuthAction {
+    // Find content versions
+    
+    // Redirect to versions list for this piece of content
   }
 
   def lookupById(id:String) = AuthAction.async {request =>
