@@ -17,7 +17,7 @@ trait PanDomainAuthActions extends AuthActions {
     (authedUser.user.email endsWith ("@guardian.co.uk")) && authedUser.multiFactor
   }
 
-  override def authCallbackUrl: String = config.getString("host").get + "/oauthCallback"
+  override def authCallbackUrl: String = "https://" + config.getString("host").get + "/oauthCallback"
 
   override lazy val domain: String = config.getString("pandomain.domain").get
   override lazy val awsSecretAccessKey: String = config.getString("pandomain.aws.secret").get
@@ -27,11 +27,11 @@ trait PanDomainAuthActions extends AuthActions {
 
 object Application extends Controller with PanDomainAuthActions {
 
-  def index = AuthAction {
+  def index = Action {
     Redirect(controllers.routes.Application.lookupById("Hey"))
   }
 
-  def lookupById(id:String) = AuthAction.async {
-    Future.successful(Ok(s"A message $id"))
+  def lookupById(id:String) = AuthAction.async {request =>
+    Future.successful(Ok(s"A message $id ${request.user}"))
   }
 }
