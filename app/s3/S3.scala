@@ -11,7 +11,7 @@ import com.amazonaws.services.s3.model.Region
 import java.io.ByteArrayInputStream
 import scala.collection.JavaConverters._
 
-object S3 {
+class S3 {
   import play.api.Play.current
   lazy val config = play.api.Play.configuration
 
