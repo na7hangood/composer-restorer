@@ -24,11 +24,10 @@ class S3 {
   lazy val s3Client = new AmazonS3Client(credentials)
 
 
-  val getLiveSnapshot: (String, String) => S3Object = getSnapshot(_, _, draftBucket)
-  val getDraftSnapshot: (String, String) => S3Object = getSnapshot(_, _, liveBucket)
+  val getLiveSnapshot: String => S3Object = getSnapshot(_, liveBucket)
+  val getDraftSnapshot:String => S3Object = getSnapshot(_, draftBucket)
 
-  private def getSnapshot(id: String, timestamp: String, bucketName: String): S3Object = {
-    val key = id + "." + timestamp + ".json"
+  private def getSnapshot(key: String, bucketName: String): S3Object = {
     s3Client.getObject(new GetObjectRequest(bucketName, key))
   }
 
