@@ -35,7 +35,7 @@ object S3 {
   val listLiveSnapshots = listSnapshots(liveBucket)
   val listDraftSnapshots = listSnapshots(draftBucket)
 
-  def listSnapshots(bucket: String): List[String] = {
+  private def listSnapshots(bucket: String): List[String] = {
     val objects = s3Client.listObjects(bucket)
     objects.getObjectSummaries().asScala.map(x => x.getKey()).toList
   }
