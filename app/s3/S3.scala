@@ -40,8 +40,8 @@ object S3 {
     objects.getObjectSummaries().asScala.map(x => x.getKey()).toList
   }
 
-  val listLiveForId: (String) => List[String] = listSnapshotsById(_, liveBucket)
-  val listDraftForId: (String) => List[String] = listSnapshotsById(_, draftBucket)
+  val listLiveForId: String => List[String] = listSnapshotsById(_, liveBucket)
+  val listDraftForId: String => List[String] = listSnapshotsById(_, draftBucket)
 
   private def listSnapshotsById(id: String, bucket: String): List[String] =
     listSnapshots(bucket).filter(x => checkId(x, id))
