@@ -24,6 +24,8 @@ object S3 {
   lazy val s3Client = new AmazonS3Client(credentials)
 
   private def getSnapshot(id: String, timestamp: String, bucketName: String): S3Object = {
+    val credentials = new BasicAWSCredentials(accessKey, secretKey)
+    val s3Client = new AmazonS3Client(credentials)
     val key = id + "." + timestamp + ".json"
     s3Client.getObject(new GetObjectRequest(bucketName, key))
   }

@@ -21,7 +21,7 @@ trait PanDomainAuthActions extends AuthActions {
 
   override lazy val domain: String = config.getString("pandomain.domain").get
   override lazy val awsSecretAccessKey: String = config.getString("pandomain.aws.secret").get
-  override lazy val awsKeyId: String = config.getString("pandomain.aws.keyId").get
+  override lazy val awsKeyId: String = config.getString("pandomain.aws.key").get
   override lazy val system: String = "composer-restorer"
 }
 
