@@ -10,6 +10,7 @@ import com.amazonaws.services.s3.model.S3Object
 import com.amazonaws.services.s3.model.Region
 import java.io.ByteArrayInputStream
 import scala.collection.JavaConverters._
+import org.joda.time.DateTime
 
 class S3 {
   import play.api.Play.current
@@ -25,7 +26,7 @@ class S3 {
 
 
   val getLiveSnapshot: String => S3Object = getSnapshot(_, liveBucket)
-  val getDraftSnapshot:String => S3Object = getSnapshot(_, draftBucket)
+  val getDraftSnapshot: String => S3Object = getSnapshot(_, draftBucket)
 
   private def getSnapshot(key: String, bucketName: String): S3Object = {
     s3Client.getObject(new GetObjectRequest(bucketName, key))
@@ -42,20 +43,38 @@ class S3 {
   val listLiveForId: String => List[String] = listSnapshotsById(_, liveBucket)
   val listDraftForId: String => List[String] = listSnapshotsById(_, draftBucket)
 
-  private def listSnapshotsById(id: String, bucket: String): List[String] =
+  private def listSnapshotsById(id: String, bucket: String): List[String] = {
+    val checkId: (String, String) =>  Boolean = _.split("_").head == _
     listSnapshots(bucket).filter(x => checkId(x, id))
+  }
 
-  def fetchTimeStamps(id: String, bucket: String): List[Option[String]] =
-    listSnapshotsById(id, bucket).map(x => x.split("\\.").lift(2))
+  val deleteLive: String => Unit = deleteSnapshot(_, liveBucket)
+  val deleteDraft: String => Unit = deleteSnapshot(_, draftBucket)
 
-  private def checkId(key: String, id: String): Boolean = key.split("\\.").head == id
-
-  val deleteLive: (String, String) => Unit = deleteSnapshot(_, _, liveBucket)
-  val deleteDraft: (String, String) => Unit = deleteSnapshot(_, _, draftBucket)
-
-  private def deleteSnapshot(id: String, timestamp: String, bucket: String) = {
-    val key = id + "." + timestamp + ".json"
+  private def deleteSnapshot(key: String, bucket: String) = {
     s3Client.deleteObject(new DeleteObjectRequest(bucket, key))
   }
 
+  private def toBeRetired(bucket: String): List[String] = {
+    val prevTime = new DateTime().minusDays(7)
+    val shouldDelete: DateTime => Boolean = prevTime.isBefore(_)
+    val timestamp: String => Option[String] = _.split("_").lift(1)
+
+    listSnapshots(bucket).filter(x => {
+      val d = DateTime.parse(timestamp(x).get)
+      shouldDelete(d)
+    })
+  }
+
+  /*
+   * Any shapshots more than seven days old should be deleted.
+   * This is an expensive operation (potentially)
+   */
+  def retireSnapshots() = {
+    val retiredLives = toBeRetired(liveBucket)
+    val retiredDrafts = toBeRetired(draftBucket)
+
+    retiredLives.map(deleteLive)
+    retiredDrafts.map(deleteDraft)
+  }
 }
