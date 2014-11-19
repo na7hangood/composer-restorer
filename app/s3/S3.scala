@@ -23,17 +23,14 @@ object S3 {
   lazy val credentials = new BasicAWSCredentials(accessKey, secretKey)
   lazy val s3Client = new AmazonS3Client(credentials)
 
+
+  val getLiveSnapshot: (String, String) => S3Object = getSnapshot(_, _, draftBucket)
+  val getDraftSnapshot: (String, String) => S3Object = getSnapshot(_, _, liveBucket)
+
   private def getSnapshot(id: String, timestamp: String, bucketName: String): S3Object = {
-    val credentials = new BasicAWSCredentials(accessKey, secretKey)
-    val s3Client = new AmazonS3Client(credentials)
     val key = id + "." + timestamp + ".json"
     s3Client.getObject(new GetObjectRequest(bucketName, key))
   }
-
-  def getLiveSnapshot(id: String, timestamp: String): S3Object =
-    getSnapshot(id, timestamp, draftBucket)
-  def getDraftSnapshot(id: String, timestamp: String): S3Object =
-    getSnapshot(id, timestamp, liveBucket)
 
   val listLiveSnapshots = listSnapshots(liveBucket)
   val listDraftSnapshots = listSnapshots(draftBucket)
@@ -42,7 +39,6 @@ object S3 {
     val objects = s3Client.listObjects(bucket)
     objects.getObjectSummaries().asScala.map(x => x.getKey()).toList
   }
-
 
   val listLiveForId: (String) => List[String] = listSnapshotsById(_, liveBucket)
   val listDraftForId: (String) => List[String] = listSnapshotsById(_, draftBucket)
