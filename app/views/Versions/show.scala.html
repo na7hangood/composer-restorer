@@ -1,5 +1,6 @@
-@(contentId: String, versionId: String)
+@(contentId: String, isLive: Boolean, versionId: String, version: String)
 
 @main("showing version") {
-    <h2>Showing version @versionId</h2>
+    <h2>Showing @(if (isLive) "live" else "draft") version @versionId of content with id @contentId</h2>
+    <textarea readonly rows="100" cols="200">@version</textarea>
 }

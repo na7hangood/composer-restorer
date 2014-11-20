@@ -5,8 +5,16 @@
 
 
     <h3>Draft versions</h3>
-    <p>@draftVersions</p>
+    <ul>
+    @for(version <- draftVersions) {
+        <li><a href="@routes.Versions.show(contentId, false, version)">@version</a></li>
+    }
+    </ul>
 
     <h3>Live versions</h3>
-    <p>@liveVersions</p>
+    <ul>
+    @for(version <- liveVersions) {
+        <li><a href="@routes.Versions.show(contentId, true, version)">@version</a></li>
+    }
+    </ul>
 }
