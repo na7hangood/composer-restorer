@@ -3,8 +3,7 @@ package controllers
 import play.api.mvc._
 
 import scala.concurrent.Future
-import s3.S3
-import com.amazonaws.auth.policy.actions.S3Actions
+
 import play.api.data._
 import play.api.data.Forms._
 

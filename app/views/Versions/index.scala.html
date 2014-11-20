@@ -1,6 +1,12 @@
-@(contentId: String)
+@(contentId: String, draftVersions: List[String], liveVersions: List[String])
 
-@main("Versions"){
-<h2>Versions</h2>
-<p>Hey hey</p>
+@main("Versions") {
+    <h2>Versions of @contentId</h2>
+
+
+    <h3>Draft versions</h3>
+    <p>@draftVersions</p>
+
+    <h3>Live versions</h3>
+    <p>@liveVersions</p>
 }
