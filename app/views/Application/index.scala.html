@@ -2,5 +2,10 @@
 
 @main("Find versions") {
     <h2>Find versions</h2>
-    <p>Paste the URL to a piece of content...</p>
+    <p>Paste the URL to a piece of content</p>
+    <form action="/find" method="post">
+        <label for="url"></label>
+        <input id="url" name="url" type="text"> <input type="submit" value="Find versions">
+    </form>
+
 }

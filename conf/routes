@@ -2,10 +2,9 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-GET     /lookup/:id                           controllers.Application.lookupById(id)
-
+# Content finder
 GET     /                                     controllers.Application.index
+POST    /find                                 controllers.Application.find
 
 GET     /oauthCallback                        controllers.Login.oauthCallback
 
