@@ -44,20 +44,20 @@ class S3 {
   val listDraftForId: String => List[String] = listSnapshotsById(_, draftBucket)
 
   private def listSnapshotsById(id: String, bucket: String): List[String] = {
+    val key = idToKey(id)
     val checkId: (String, String) =>  Boolean = _.split("_").head == _
-    listSnapshots(bucket).filter(x => checkId(x, id))
+    listSnapshots(bucket).filter(x => checkId(x, key))
   }
 
   val deleteLive: String => Unit = deleteSnapshot(_, liveBucket)
   val deleteDraft: String => Unit = deleteSnapshot(_, draftBucket)
 
-  private def deleteSnapshot(key: String, bucket: String) = {
+  private def deleteSnapshot(key: String, bucket: String) =
     s3Client.deleteObject(new DeleteObjectRequest(bucket, key))
-  }
 
   private def toBeRetired(bucket: String): List[String] = {
     val prevTime = new DateTime().minusDays(7)
-    val shouldDelete: DateTime => Boolean = prevTime.isBefore(_)
+    val shouldDelete: DateTime => Boolean = _.isBefore(prevTime)
     val timestamp: String => Option[String] = _.split("_").lift(1)
 
     listSnapshots(bucket).filter(x => {
@@ -65,6 +65,12 @@ class S3 {
       shouldDelete(d)
     })
   }
+
+  // helpers to make the objects more manageable
+  private val keyToId: String => String = _.split("/").mkString("")
+  private val idToKey: String => String = s =>
+    s.substring(0, 6).split("").mkString("/").substring(1) + s.substring(6)
+
 
   /*
    * Any shapshots more than seven days old should be deleted.
