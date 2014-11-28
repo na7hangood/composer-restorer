@@ -33,8 +33,4 @@ object Versions extends Controller with PanDomainAuthActions {
     Ok(Json.parse(version))
   }
 
-  // Restore a specific version
-  def restore(contentId: String, isLive: Boolean, versionId: String) = AuthAction {
-    Ok("Restoring version ...")
-  }
 }
