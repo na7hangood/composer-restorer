@@ -15,4 +15,3 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 # Versions
 GET     /content/:contentId/versions                           controllers.Versions.index(contentId: String)
 GET     /content/:contentId/versions/:versionId                controllers.Versions.show(contentId: String, isLive: Boolean, versionId: String)
-PUT     /content/:contentId/versions/:versionId                controllers.Versions.restore(contentId: String, isLive: Boolean, versionId: String)
