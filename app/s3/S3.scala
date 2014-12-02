@@ -32,6 +32,7 @@ class S3 {
     s3Client.getObject(new GetObjectRequest(bucketName, key))
   }
 
+
   val listLiveSnapshots = listSnapshots(liveBucket)
   val listDraftSnapshots = listSnapshots(draftBucket)
 
@@ -45,9 +46,11 @@ class S3 {
 
   private def listSnapshotsById(id: String, bucket: String): List[String] = {
     val key = idToKey(id)
-    val checkId: (String, String) =>  Boolean = _.split("_").head == _
+    val checkId: (String, String) =>  Boolean = getId(_) == _
     listSnapshots(bucket).filter(x => checkId(x, key))
   }
+
+
 
   val deleteLive: String => Unit = deleteSnapshot(_, liveBucket)
   val deleteDraft: String => Unit = deleteSnapshot(_, draftBucket)
@@ -67,16 +70,16 @@ class S3 {
   }
 
   // helpers to make the objects more manageable
-  private val keyToId: String => String = _.split("/").mkString("")
+  private val getId: String => String = _.split("_").head.substring(12)
   private val idToKey: String => String = s =>
-    s.substring(0, 6).split("").mkString("/").substring(1) + s.substring(6)
+    s.substring(0, 6).split("").mkString("/").substring(1) + "/" + s
 
 
   /*
    * Any shapshots more than seven days old should be deleted.
    * This is an expensive operation (potentially)
    */
-  def retireSnapshots() = {
+  def retireSnapshots(): List[Unit] = {
     val retiredLives = toBeRetired(liveBucket)
     val retiredDrafts = toBeRetired(draftBucket)
 
