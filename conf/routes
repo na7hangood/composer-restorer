@@ -2,18 +2,16 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-GET     /lookup/:id                           controllers.Application.lookupById(id)
-
+# Content finder
 GET     /                                     controllers.Application.index
+POST    /find                                 controllers.Application.find
 
 GET     /oauthCallback                        controllers.Login.oauthCallback
 
 # Map static resources from the /public folder to the /assets URL path
-#GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 
 # Versions
 GET     /content/:contentId/versions                           controllers.Versions.index(contentId: String)
-GET     /content/:contentId/versions/:versionId                controllers.Versions.show(contentId: String, versionId: String)
-PUT     /content/:contentId/versions/:versionId                controllers.Versions.restore(contentId: String, versionId: String)
+GET     /content/:contentId/versions/:versionId                controllers.Versions.show(contentId: String, isLive: Boolean, versionId: String)

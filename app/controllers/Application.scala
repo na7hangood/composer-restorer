@@ -1,8 +1,11 @@
 package controllers
 
-import play.api._
 import play.api.mvc._
+
 import scala.concurrent.Future
+
+import play.api.data._
+import play.api.data.Forms._
 
 // Pan domain
 import com.gu.pandomainauth.action.AuthActions
@@ -27,17 +30,19 @@ trait PanDomainAuthActions extends AuthActions {
 
 object Application extends Controller with PanDomainAuthActions {
 
+  val urlForm = Form(
+    "url" -> nonEmptyText
+  )
   def index = AuthAction {
     Ok(views.html.Application.index())
   }
 
-  def find(url: String) = AuthAction {
-    // Find content versions
-    
-    // Redirect to versions list for this piece of content
-  }
+  def find = AuthAction { implicit request =>
+    def extractContentId(url: String) = url.split("/").last
 
-  def lookupById(id:String) = AuthAction.async {request =>
-    Future.successful(Ok(s"A message $id ${request.user}"))
+    urlForm.bindFromRequest.fold(
+    {errorForm => Redirect(controllers.routes.Application.index)},
+    {url => Redirect(controllers.routes.Versions.index(extractContentId(url)))}
+    )
   }
 }

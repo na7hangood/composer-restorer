@@ -1,6 +1,16 @@
 @()
 
-@main("Find versions") {
-    <h2>Find versions</h2>
-    <p>Paste the URL to a piece of content...</p>
+@main("Composer Restorer") {
+    <div class="find-versions">
+        <h2>Composer Restorer</h2>
+        <p>Paste the <em>Composer URL</em> to a piece of content</p>
+        <form role="form" action="/find" method="post">
+            <div class="form-group">
+                <label for="url"></label>
+                <input class="form-control" id="url" name="url" type="text">
+            </div>
+            <input type="submit" value="Find versions">
+        </form>
+    </div>
+
 }
