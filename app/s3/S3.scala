@@ -47,7 +47,7 @@ class S3 {
   private def listSnapshotsById(id: String, bucket: String): List[String] = {
     val key = idToKey(id)
     val checkId: (String, String) =>  Boolean = getId(_) == _
-    listSnapshots(bucket).filter(x => checkId(x, key))
+    listSnapshots(bucket).filter(x => checkId(x, id))
   }
 
 
