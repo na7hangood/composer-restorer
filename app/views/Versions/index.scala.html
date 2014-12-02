@@ -1,25 +1,26 @@
 @(contentId: String, draftVersions: List[String], liveVersions: List[String])
+@import org.joda.time.DateTime
 
-    @main("Versions") {
-        <h2>Versions of @contentId</h2>
+@main("Versions") {
+    <h2>Versions of @contentId</h2>
 
-        <h3>Draft versions</h3>
-        <table class="table table-striped table-bordered table-hover">
-        @for(version <- draftVersions) {
-            <tr>
-                <td><a target="_blank" href="@routes.Versions.show(contentId, false, version)">@version</a></td>
-                <td><button>Restore</button></td>
-            </tr>
-        }
-        </table>
-
-        <h3>Live versions</h3>
-        <table class="table table-striped table-bordered table-hover">
-        @for(version <- liveVersions) {
-            <tr>
-                <td><a target="_blank" href="@routes.Versions.show(contentId, true, version)">@version</a></td>
-                <td><button>Restore</button></td>
-            </tr>
-        }
-        </table>
+    <h3>Draft versions</h3>
+    <table class="table table-striped table-bordered table-hover">
+    @for(version <- draftVersions) {
+        <tr>
+            <td><a target="_blank" href="@routes.Versions.show(contentId, false, version)">@{new DateTime(version.split("_")(1)).toString("dd/MM/yyyy HH:mm:ss")}</a></td>
+            <td><button onclick="onRestoreBtnClick('@version', false)">Restore</button></td>
+        </tr>
     }
+    </table>
+
+    <h3>Live versions</h3>
+    <table class="table table-striped table-bordered table-hover">
+    @for(version <- liveVersions) {
+        <tr>
+            <td><a target="_blank" href="@routes.Versions.show(contentId, true, version)">@{new DateTime(version.split("_")(1)).toString("dd/MM/yyyy HH:mm:ss")}</a></td>
+            <td><button onclick="onRestoreBtnClick('@version', false)">Restore</button></td>
+        </tr>
+    }
+    </table>
+}
