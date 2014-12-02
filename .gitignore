@@ -16,3 +16,6 @@ dist
 /.ensime
 /.ensime_cache/
 /conf/composer-restorer.conf
+public/stylesheets/vendor
+public/javascripts
+node_modules/

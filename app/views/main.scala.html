@@ -5,13 +5,17 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Composer Restorer - @pageTitle</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("/stylesheets/vendor/bootstrap.min.css")" />
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("/stylesheets/vendor/bootstrap-theme.min.css")" />
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("/stylesheets/application.css")" />
+
 </head>
 <body>
     <div class="container">
         @content
     </div>
+
+    <script src="@routes.Assets.at("/javascripts/application.js")"></script>
 </body>
 </html>

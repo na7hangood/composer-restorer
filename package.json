@@ -1,0 +1,17 @@
+{
+  "name": "composer-restorer",
+  "scripts": {
+    "postinstall": "mkdir -p public/stylesheets/vendor && cp node_modules/bootstrap/dist/css/* $_ && npm run bundle",
+    "bundle": "browserify app/assets/javascripts/index.js -o public/javascripts/application.js",
+    "watch-js": "watchify app/assets/javascripts/index.js -o public/javascripts/application.js",
+    "watch": "npm run watch-js"
+  },
+  "devDependencies": {
+    "browserify": "^6.3.2",
+    "watchify": "^2.1.1"
+  },
+  "dependencies": {
+    "bootstrap": "^3.3.1",
+    "superagent": "^0.21.0"
+  }
+}
