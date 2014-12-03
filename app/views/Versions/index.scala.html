@@ -1,26 +1,66 @@
 @(contentId: String, draftVersions: List[String], liveVersions: List[String])
+@import org.joda.time.Duration
 @import org.joda.time.DateTime
+@import org.joda.time.Period
+@import org.joda.time.format.PeriodFormat
 
 @main("Versions") {
     <h2>Versions of @contentId</h2>
 
     <h3>Draft versions</h3>
-    <table class="table table-striped table-bordered table-hover">
-    @for(version <- draftVersions) {
-        <tr>
-            <td><a target="_blank" href="@routes.Versions.show(contentId, false, version)">@{new DateTime(version.split("_")(1)).toString("dd/MM/yyyy HH:mm:ss")}</a></td>
-            <td><button onclick="onRestoreBtnClick('@version', false)">Restore</button></td>
-        </tr>
-    }
+    <table class="table">
+        <thead class="table-striped table-bordered table-hover snapshots-table__header">
+            <tr>
+                <th>Snapshot</th>
+                <th>Saved at</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for(version <- draftVersions.reverse) {
+                <tr class="table-striped table-bordered table-hover snapshots-table__row">
+                    <td>@{ draftVersions.indexOf(version) + 1 }</td>
+                    <td><a target="_blank" href="@routes.Versions.show(contentId, false, version)">@{new DateTime(version.split("_")(1)).toString("dd/MM/yyyy HH:mm:ss")}</a></td>
+                    <td><a class="btn btn-default btn-xs" href="#modal-text">Restore</a></td>
+                </tr>
+                <tr class="time-difference">
+                    <td colspan="3">@{if (draftVersions.indexOf(version) > 0) PeriodFormat.getDefault().print(new Duration(new DateTime((draftVersions(draftVersions.indexOf(version)  - 1)).split("_")(1)).withSecondOfMinute(0).withMillisOfSecond(0), new DateTime(version.split("_")(1)).withSecondOfMinute(0).withMillisOfSecond(0)).toPeriod()) + " between snapshots"}</td>
+                </tr>
+            }
+        </tbody>
     </table>
 
     <h3>Live versions</h3>
-    <table class="table table-striped table-bordered table-hover">
-    @for(version <- liveVersions) {
-        <tr>
-            <td><a target="_blank" href="@routes.Versions.show(contentId, true, version)">@{new DateTime(version.split("_")(1)).toString("dd/MM/yyyy HH:mm:ss")}</a></td>
-            <td><button onclick="onRestoreBtnClick('@version', false)">Restore</button></td>
-        </tr>
-    }
-    </table>
+    @*<table class="table table-striped table-bordered table-hover">*@
+    @*@for(version <- liveVersions) {*@
+        @*<tr>*@
+            @*<td><a target="_blank" href="@routes.Versions.show(contentId, true, version)">@{new DateTime(version.split("_")(1)).toString("dd/MM/yyyy HH:mm:ss")}</a></td>*@
+            @*<td><button onclick="onRestoreBtnClick('@version', false)">Restore</button></td>*@
+        @*</tr>*@
+    @*}*@
+    @*</table>*@
+
+    <section class="modal--show modal--transition-fade" id="modal-text" tabindex="-1"
+    role="dialog" aria-labelledby="modal-label" aria-hidden="true">
+
+        <div class="modal-inner">
+            <div class="modal-content">
+                <h1>Before you restore</h1>
+                <p>Make sure that:</p>
+                <ol style="list-style-type: none">
+                    <li><input type="checkbox"> You're not in the piece of content.</li>
+                    <li onclick="document.getElementById('restore-btn' ).disabled = false;"><input type="checkbox"> No one else is in.</li>
+                </ol>
+
+                <div modal__button-group>
+                    <button disabled id="restore-btn" class="modal__button-group__item btn btn-primary" type="button" onclick="">Understood, restore this version</button>
+                    <a class="modal__button-group__item btn btn-default" href="#!">Cancel</a>
+                </div>
+
+            </div>
+        </div>
+
+        <a href="#!" class="modal-close" title="Close this modal" data-close="Close"
+        data-dismiss="modal">?</a>
+    </section>
 }
