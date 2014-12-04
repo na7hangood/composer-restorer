@@ -1,0 +1,46 @@
+@(contentId: String, liveOrDraft: String, snapshots: List[String])
+@import org.joda.time.Duration
+@import org.joda.time.DateTime
+@import org.joda.time.format.PeriodFormat
+
+@timeSinceLastSnapshot(currentSnapshot: String, snapshots: List[String]) = @{
+  if (snapshots.indexOf(currentSnapshot) > 0) {
+    val currentSnapshotTime = new DateTime(currentSnapshot.split("_")(1))
+            .withSecondOfMinute(0).withMillisOfSecond(0)
+
+    val lastSnapshotTime = new DateTime(snapshots(snapshots.indexOf(currentSnapshot)  - 1).split("_")(1))
+            .withSecondOfMinute(0).withMillisOfSecond(0)
+
+
+    val timeBetweenSnapshots = new Duration(lastSnapshotTime, currentSnapshotTime).toPeriod()
+
+
+    PeriodFormat.getDefault().print(timeBetweenSnapshots) + " between snapshots"
+  }
+}
+
+<h3>@liveOrDraft.capitalize snapshots</h3>
+<table class="table">
+  <thead class="table-bordered table-hover snapshots-table__header">
+    <tr>
+      <th>Snapshot</th>
+      <th>Saved at</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+  @for(snapshot <- snapshots.reverse) {
+    <tr class="table-bordered table-hover snapshots-table__row">
+      <td>@{ snapshots.indexOf(snapshot) + 1 }</td>
+      <td><a target="_blank" href="@routes.Versions.show(contentId, false, snapshot)">@{new DateTime(snapshot.split("_")(1)).toString("dd/MM/yyyy HH:mm:ss")}</a></td>
+      <td>
+        <a class="btn btn-default btn-xs" href="#modal-text">Restore</a>
+        <button class="btn btn-danger btn-xs" onclick="onRestoreBtnClick('@routes.Versions.show(contentId, false, snapshot)')">Restore now</button>
+      </td>
+    </tr>
+    <tr class="time-difference">
+      <td colspan="3">@timeSinceLastSnapshot(snapshot, snapshots)</td>
+    </tr>
+  }
+  </tbody>
+</table>
