@@ -3,32 +3,50 @@
 var request = require('superagent');
 
 var apiUrl = 'https://composer.local.dev-gutools.co.uk/api';
-var apiContentUrl = apiUrl + '/content/54747d607d84173b978e38ec';
 
-function restore(versionId, isLive) {
-    //var archivedVersionPath = window.location.href + '?isLive=' + isLive + '&versionId=' + versionId;
-    request.get(apiContentUrl)
-        .withCredentials()
-        .set('Content-Type', 'text/plain')
-        .send("some text")
-        .end(function(error, response) {
-            console.log('Response ok:', response.ok);
-            console.log('Response text:', response.text);
-            console.log('Error? :', error);
+// TODO: Replace with real URL.
+var apiContentUrl = apiUrl + '/content/546f5e057d840e9e8565e25f?includePreview=true';
 
-            request.post(apiContentUrl)
-                .withCredentials()
-                .set('Content-Type', 'text/plain')
-                .send("some text")
-                .end(function(error, response) {
-                    console.log('Response ok:', response.ok);
-                    console.log('Response text:', response.text);
-                    console.log('Error? :', error);
-                });
+function restore(archivedVersionPath) {
+    function updateContent(snapshot) {
+        request.get(apiContentUrl)
+            .withCredentials()
+            .set('Content-Type', 'text/plain')
+            //.send(snapshot)
+            .end(function(error, response) {
+                console.log('Response ok:', response.ok);
+                console.log('Response text:', response.text);
+                console.log('Error? :', error);
         });
+    }
+
+    //var archivedVersionPath = window.location.href + '?isLive=' + isLive + '&versionId=' + versionId;
+    request.get(archivedVersionPath, function(error, response) {
+        var snapshot = response.text;
+        updateContent(snapshot)
+    });
+
+}
+
+var modalTemplate = require('./modal.handlebars');
+
+function modal(archivedVersionPath) {
+    // Replace #modal HTML with template.
+    var html = modalTemplate({archivedVersionPath: archivedVersionPath});
+    var modalEl = document.getElementById('modal');
+
+    modalEl.innerHTML = html;
+
+    // Set up listener on #restore-btn.
+    document.getElementById('restore-btn').addEventListener('click', function(e) {
+        restore(e.target.dataset.archivedVersionPath);
+    });
+
+    // Show modal.
+    window.location.hash = '#modal-text';
 }
 
 // It ain't pretty exposing it on `window`, but let's keep it simple for now.
 // Separating things into a single page app and an API would enable an equally
 // simple but nice solution.
-window.onRestoreBtnClick = restore;
+window.modal = modal;
