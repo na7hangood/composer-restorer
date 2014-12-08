@@ -1,6 +1,7 @@
 // Bundled by browserify and put in 'public/'. We don't use the Play Asset pipeline.
 
 var request = require('superagent');
+var toArray = require("to-array");
 
 var API_URL = 'https://composer.local.dev-gutools.co.uk/api';
 
@@ -30,14 +31,28 @@ function restore(archivedVersionPath) {
 
 }
 
+
+
+/**
+*  Restore confirmation
+*  ====================
+* */
+
 var modalTemplate = require('./modal.handlebars');
 
 function modal(archivedVersionPath) {
     // Replace #modal HTML with template.
     var html = modalTemplate({archivedVersionPath: archivedVersionPath});
-    var modalEl = document.getElementById('modal');
+    var modalEl = document.getElementById('restore-modal');
 
     modalEl.innerHTML = html;
+
+    // Set up listener on criteria.
+    toArray(document.querySelectorAll('[data-component-restore-criteria]')).forEach(function(checkbox) {
+        checkbox.addEventListener('click', function() {
+            enabledIfAllChecked();
+        })
+    });
 
     // Set up listener on #restore-btn.
     document.getElementById('restore-btn').addEventListener('click', function(e) {
@@ -52,3 +67,15 @@ function modal(archivedVersionPath) {
 // Separating things into a single page app and an API would enable an equally
 // simple but nice solution.
 window.modal = modal;
+
+function enabledIfAllChecked() {
+    var modalEl = document.getElementById('restore-modal');
+    var restoreBtn = document.getElementById('restore-btn' );
+
+    var allChecked = toArray(modalEl.querySelectorAll('[data-component-restore-criteria]')).every(function(el) {
+        return el.checked;
+    });
+
+    restoreBtn.disabled = !allChecked;
+}
+
