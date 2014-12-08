@@ -49,9 +49,7 @@ function modal(archivedVersionPath) {
 
     // Set up listener on criteria.
     toArray(document.querySelectorAll('[data-component-restore-criteria]')).forEach(function(checkbox) {
-        checkbox.addEventListener('click', function() {
-            enabledIfAllChecked();
-        })
+        checkbox.addEventListener('click', enabledIfAllChecked)
     });
 
     // Set up listener on #restore-btn.
