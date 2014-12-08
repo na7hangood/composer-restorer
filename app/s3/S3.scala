@@ -61,7 +61,7 @@ class S3 {
   private def toBeRetired(bucket: String): List[String] = {
     val prevTime = new DateTime().minusDays(7)
     val shouldDelete: DateTime => Boolean = _.isBefore(prevTime)
-    val timestamp: String => Option[String] = _.split("_").lift(1)
+    val timestamp: String => Option[String] = _.split("/").lift(7)
 
     listSnapshots(bucket).filter(x => {
       val d = DateTime.parse(timestamp(x).get)
@@ -70,7 +70,7 @@ class S3 {
   }
 
   // helpers to make the objects more manageable
-  private val getId: String => String = _.split("_").head.substring(12)
+  private val getId: String => Option[String] = _.split("/").lift(6)
   private val idToKey: String => String = s =>
     s.substring(0, 6).split("").mkString("/").substring(1) + "/" + s
 
