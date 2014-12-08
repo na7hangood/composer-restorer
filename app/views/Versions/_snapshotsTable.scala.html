@@ -46,9 +46,7 @@
       <td>@{ snapshots.indexOf(snapshot) + 1 }</td>
       <td><a target="_blank" href="@routes.Versions.show(contentId, false, snapshot)">@{new DateTime(snapshot.split("_")(1)).toString("dd/MM/yyyy HH:mm:ss")}</a></td>
       <td>
-        @*<a class="btn btn-default btn-xs" href="#modal-text">Restore</a>*@
         <button class="btn btn-default btn-xs" onclick="modal('@routes.Versions.show(contentId, false, snapshot)')">Restore</button>
-        @*<button class="btn btn-danger btn-xs" onclick="onRestoreBtnClick('@routes.Versions.show(contentId, false, snapshot)')">Restore now</button>*@
       </td>
     </tr>
     <tr class="time-difference">
