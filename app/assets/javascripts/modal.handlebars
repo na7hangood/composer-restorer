@@ -10,7 +10,7 @@ role="dialog" aria-labelledby="modal-label" aria-hidden="true">
         <li onclick="document.getElementById('restore-btn' ).disabled = false;"><input type="checkbox"> No one else is in.</li>
       </ol>
 
-      <div modal__button-group>
+      <div class="modal__button-group">
         <button disabled id="restore-btn" class="modal__button-group__item btn btn-primary" type="button" data-archived-version-path="{{ archivedVersionPath }}">Understood, restore this version</button>
         <a class="modal__button-group__item btn btn-default" href="#!">Cancel</a>
       </div>

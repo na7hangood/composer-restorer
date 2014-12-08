@@ -2,17 +2,19 @@
 
 var request = require('superagent');
 
-var apiUrl = 'https://composer.local.dev-gutools.co.uk/api';
+var API_URL = 'https://composer.local.dev-gutools.co.uk/api';
 
-// TODO: Replace with real URL.
-var apiContentUrl = apiUrl + '/content/546f5e057d840e9e8565e25f?includePreview=true';
+// TODO: How deal with live? (Don't want to update the live version)
+
+function rawContentEndpoint(contentId) {
+    return API_URL + '/content/Raw/:contentId'.replace(':contentId', contentId);
+}
 
 function restore(archivedVersionPath) {
     function updateContent(snapshot) {
-        request.get(apiContentUrl)
+        request.put(rawContentEndpoint('546f5e057d840e9e8565e25f'))
             .withCredentials()
-            .set('Content-Type', 'text/plain')
-            //.send(snapshot)
+            .send(snapshot)
             .end(function(error, response) {
                 console.log('Response ok:', response.ok);
                 console.log('Response text:', response.text);
