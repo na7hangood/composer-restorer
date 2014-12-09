@@ -7,14 +7,13 @@ var API_URL = 'https://composer.local.dev-gutools.co.uk/api';
 
 // TODO: How deal with live? (Don't want to update the live version)
 
-function rawContentEndpoint(contentId) {
-    return API_URL + '/content/Raw/:contentId'.replace(':contentId', contentId);
-}
+var rawContentEndpoint = API_URL + '/content/restorer';
 
 function restore(archivedVersionPath) {
     function updateContent(snapshot) {
-        request.put(rawContentEndpoint('546f5e057d840e9e8565e25f'))
+        request.put(rawContentEndpoint)
             .withCredentials()
+            .set('Content-Type', 'application/json;charset=utf-8') // we need to set this
             .send(snapshot)
             .end(function(error, response) {
                 console.log('Response ok:', response.ok);
@@ -23,7 +22,6 @@ function restore(archivedVersionPath) {
         });
     }
 
-    //var archivedVersionPath = window.location.href + '?isLive=' + isLive + '&versionId=' + versionId;
     request.get(archivedVersionPath, function(error, response) {
         var snapshot = response.text;
         updateContent(snapshot)
