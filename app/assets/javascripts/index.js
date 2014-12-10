@@ -3,9 +3,9 @@
 var request = require('superagent');
 var toArray = require("to-array");
 
+/* TODO: Have a think about how to change this according to the environment we're in.
+   There are various libraries/patterns for Browserify. */
 var API_URL = 'https://composer.local.dev-gutools.co.uk/api';
-
-// TODO: How deal with live? (Don't want to update the live version)
 
 var rawContentEndpoint = API_URL + '/content/restorer';
 
@@ -24,7 +24,13 @@ function restore(archivedVersionPath) {
 
     request.get(archivedVersionPath, function(error, response) {
         var snapshot = response.text;
-        updateContent(snapshot)
+
+        // To test restoring you can overwrite a local piece of content, e.g by doing:
+        //  snapshot = JSON.parse(snapshot);
+        //  snapshot.id = 'local-composer-content-id-here';
+        //  snapshot = JSON.stringify(snapshot);
+
+        updateContent(snapshot);
     });
 
 }

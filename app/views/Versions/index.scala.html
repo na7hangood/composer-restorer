@@ -6,9 +6,7 @@
 @main("Versions") {
     <h2>Snapshots of @contentId</h2>
 
-    @_snapshotsTable(contentId, "draft", draftSnapshots)
-
-    @_snapshotsTable(contentId, "live", liveSnapshots)
+    @_snapshotsTable(contentId, draftSnapshots)
 
     <!-- Used in snapshots table -->
     <div id="restore-modal"></div>
