@@ -1,5 +1,6 @@
 package controllers
 
+import com.amazonaws.services.s3.model.S3Object
 import play.api.mvc._
 import play.api.libs.json.Json
 
@@ -12,9 +13,12 @@ object Versions extends Controller with PanDomainAuthActions {
   def index(contentId: String) = AuthAction {
     val s3 = new S3
     val draftVersions = s3.listDraftForId(contentId)
-    val liveVersions = s3.listLiveForId(contentId)
 
-    Ok(views.html.Versions.index(contentId, draftVersions, liveVersions))
+    // We use the last snapshot's headline.
+    val snapshotPath = draftVersions.last
+    val headline = (Json.parse(snapShotAsString(s3.getDraftSnapshot(snapshotPath))) \ "preview" \ "fields" \ "headline").asOpt[String]
+
+    Ok(views.html.Versions.index(contentId, draftVersions, headline getOrElse ""))
   }
 
   // Show a specific version
@@ -22,10 +26,13 @@ object Versions extends Controller with PanDomainAuthActions {
     val s3 = new S3
     val versionPath = versionId
 
-    val versionObject = if (isLive) s3.getLiveSnapshot(versionPath) else s3.getDraftSnapshot(versionPath)
-    val version = Source.fromInputStream(versionObject.getObjectContent(), "UTF-8").mkString
+    val snapshot = if (isLive) s3.getLiveSnapshot(versionPath) else s3.getDraftSnapshot(versionPath)
 
-    Ok(version)
+    Ok(snapShotAsString(snapshot))
+  }
+
+  def snapShotAsString(snapshot: S3Object) = {
+    Source.fromInputStream(snapshot.getObjectContent(), "UTF-8").mkString
   }
 
 }
