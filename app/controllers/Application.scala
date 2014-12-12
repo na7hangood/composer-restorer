@@ -38,7 +38,9 @@ object Application extends Controller with PanDomainAuthActions {
   }
 
   def find = AuthAction { implicit request =>
-    def extractContentId(url: String) = url.split("/").last
+    def extractContentId(url: String) = url
+      .split('#').head // remove any hash fragment, e.g. referring to live blog posts
+      .split("/").last.trim // get the id
 
     urlForm.bindFromRequest.fold(
     {errorForm => Redirect(controllers.routes.Application.index)},

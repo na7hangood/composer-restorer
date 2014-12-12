@@ -6,8 +6,8 @@ role="dialog" aria-labelledby="modal-label" aria-hidden="true">
       <h1>Before you restore</h1>
       <p>Make sure that:</p>
       <ol data-component-restore style="list-style-type: none">
-        <li><input type="checkbox" data-component-restore-criteria> You're not in the piece of content.</li>
-        <li><input type="checkbox" data-component-restore-criteria> No one else is in.</li>
+        <li><input type="checkbox" data-component-restore-criteria> You're not in the content</li>
+        <li><input type="checkbox" data-component-restore-criteria> No one else is in the content</li>
       </ol>
 
       <div class="modal__button-group">
@@ -15,7 +15,7 @@ role="dialog" aria-labelledby="modal-label" aria-hidden="true">
                 class="modal__button-group__item btn btn-primary"
                 type="button"
                 data-content-id="{{ contentId }}"
-                data-archived-version-path="{{ archivedVersionPath }}">Understood, restore this version</button>
+                data-archived-version-path="{{ archivedVersionPath }}">Restore version</button>
         <a class="modal__button-group__item btn btn-default" href="#!">Cancel</a>
       </div>
 

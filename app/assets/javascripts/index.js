@@ -56,7 +56,7 @@ function success(contentId) {
     failureNotification.classList.add('hidden');
     successNotification.classList.remove('hidden');
 
-    var rawSuccessTemplate = 'Successfully restored snapshot. <a href="{{composerUrl}}/content/{{contentId}}">Open the content in Composer</a>';
+    var rawSuccessTemplate = 'Successfully restored snapshot. <a target="_blank" href="{{composerUrl}}/content/{{contentId}}">Open in Composer</a>';
     var successTemplate = handlebars.compile(rawSuccessTemplate);
 
     successNotification.innerHTML = successTemplate({composerUrl: COMPOSER_URL, contentId: contentId});

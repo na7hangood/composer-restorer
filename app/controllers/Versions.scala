@@ -14,11 +14,16 @@ object Versions extends Controller with PanDomainAuthActions {
     val s3 = new S3
     val draftVersions = s3.listDraftForId(contentId)
 
-    // We use the last snapshot's headline.
-    val snapshotPath = draftVersions.last
-    val headline = (Json.parse(snapShotAsString(s3.getDraftSnapshot(snapshotPath))) \ "preview" \ "fields" \ "headline").asOpt[String]
+    if (draftVersions != Nil) {
+      // We use the last snapshot's headline.
+      val snapshotPath = draftVersions.last
+      val headline = (Json.parse(snapShotAsString(s3.getDraftSnapshot(snapshotPath))) \ "preview" \ "fields" \ "headline").asOpt[String]
 
-    Ok(views.html.Versions.index(contentId, draftVersions, headline getOrElse ""))
+      Ok(views.html.Versions.index(contentId, draftVersions, headline getOrElse ""))
+    } else {
+      Ok(views.html.Versions.index(contentId, draftVersions, ""))
+    }
+
   }
 
   // Show a specific version
