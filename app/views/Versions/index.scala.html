@@ -5,6 +5,8 @@
 
 @main("Versions") {
     <h2>Snapshots of @contentId</h2>
+    <div id="notification-success" class="alert alert-success hidden"></div>
+    <div id="notification-failure" class="alert alert-danger hidden"></div>
 
     @_snapshotsTable(contentId, draftSnapshots)
 

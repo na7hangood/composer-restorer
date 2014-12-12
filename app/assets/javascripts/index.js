@@ -2,23 +2,29 @@
 
 var request = require('superagent');
 var toArray = require("to-array");
+var handlebars = require('handlebars');
 
 /* TODO: Have a think about how to change this according to the environment we're in.
    There are various libraries/patterns for Browserify. */
 var API_URL = 'https://composer.local.dev-gutools.co.uk/api';
+var COMPOSER_URL = 'https://composer.local.dev-gutools.co.uk';
 
-var rawContentEndpoint = API_URL + '/content/restorer';
+function restoreContentEndpoint(contentId) {
+    return API_URL + '/restorer/content/:contentId'.replace(':contentId', contentId);
+}
 
-function restore(archivedVersionPath) {
+function restore(archivedVersionPath, contentId, success, failure) {
     function updateContent(snapshot) {
-        request.put(rawContentEndpoint)
+        request.put(restoreContentEndpoint(contentId))
             .withCredentials()
             .set('Content-Type', 'application/json;charset=utf-8') // we need to set this
             .send(snapshot)
             .end(function(error, response) {
-                console.log('Response ok:', response.ok);
-                console.log('Response text:', response.text);
-                console.log('Error? :', error);
+                if (response.ok) {
+                    success(contentId)
+                } else {
+                    failure(contentId)
+                }
         });
     }
 
@@ -26,9 +32,9 @@ function restore(archivedVersionPath) {
         var snapshot = response.text;
 
         // To test restoring you can overwrite a local piece of content, e.g by doing:
-        //  snapshot = JSON.parse(snapshot);
-        //  snapshot.id = 'local-composer-content-id-here';
-        //  snapshot = JSON.stringify(snapshot);
+        //snapshot = JSON.parse(snapshot);
+        //snapshot.id = 'id-of-local-content-here';
+        //snapshot = JSON.stringify(snapshot);
 
         updateContent(snapshot);
     });
@@ -43,10 +49,31 @@ function restore(archivedVersionPath) {
 * */
 
 var modalTemplate = require('./modal.handlebars');
+var successNotification = document.getElementById('notification-success');
+var failureNotification = document.getElementById('notification-failure');
 
-function modal(archivedVersionPath) {
+function success(contentId) {
+    failureNotification.classList.add('hidden');
+    successNotification.classList.remove('hidden');
+
+    var rawSuccessTemplate = 'Successfully restored snapshot. <a href="{{composerUrl}}/content/{{contentId}}">Open the content in Composer</a>';
+    var successTemplate = handlebars.compile(rawSuccessTemplate);
+
+    successNotification.innerHTML = successTemplate({composerUrl: COMPOSER_URL, contentId: contentId});
+    window.location.hash = '#!'
+}
+
+function failure(contentId) {
+    successNotification.classList.add('hidden');
+    failureNotification.classList.remove('hidden');
+
+    failureNotification.innerHTML = 'There was an error restoring the snapshot.';
+    window.location.hash = '#!'
+}
+
+function modal(archivedVersionPath, contentId) {
     // Replace #modal HTML with template.
-    var html = modalTemplate({archivedVersionPath: archivedVersionPath});
+    var html = modalTemplate({archivedVersionPath: archivedVersionPath, contentId: contentId});
     var modalEl = document.getElementById('restore-modal');
 
     modalEl.innerHTML = html;
@@ -58,7 +85,8 @@ function modal(archivedVersionPath) {
 
     // Set up listener on #restore-btn.
     document.getElementById('restore-btn').addEventListener('click', function(e) {
-        restore(e.target.dataset.archivedVersionPath);
+        var dataset = e.target.dataset;
+        restore(dataset.archivedVersionPath, dataset.contentId, success, failure);
     });
 
     // Show modal.

@@ -11,7 +11,11 @@ role="dialog" aria-labelledby="modal-label" aria-hidden="true">
       </ol>
 
       <div class="modal__button-group">
-        <button disabled id="restore-btn" class="modal__button-group__item btn btn-primary" type="button" data-archived-version-path="{{ archivedVersionPath }}">Understood, restore this version</button>
+        <button disabled id="restore-btn"
+                class="modal__button-group__item btn btn-primary"
+                type="button"
+                data-content-id="{{ contentId }}"
+                data-archived-version-path="{{ archivedVersionPath }}">Understood, restore this version</button>
         <a class="modal__button-group__item btn btn-default" href="#!">Cancel</a>
       </div>
 
