@@ -1,26 +1,15 @@
-@(contentId: String, draftVersions: List[String], liveVersions: List[String])
-@import org.joda.time.DateTime
+@(contentId: String, draftSnapshots: List[String], headline: String)
+
+@import views.html.Versions._
+
 
 @main("Versions") {
-    <h2>Versions of @contentId</h2>
+    <h2>@headline <em>(@contentId)</em></h2>
+    <div id="notification-success" class="alert alert-success hidden"></div>
+    <div id="notification-failure" class="alert alert-danger hidden"></div>
 
-    <h3>Draft versions</h3>
-    <table class="table table-striped table-bordered table-hover">
-    @for(version <- draftVersions) {
-        <tr>
-            <td><a target="_blank" href="@routes.Versions.show(contentId, false, version)">@{new DateTime(version.split("_")(1)).toString("dd/MM/yyyy HH:mm:ss")}</a></td>
-            <td><button onclick="onRestoreBtnClick('@version', false)">Restore</button></td>
-        </tr>
-    }
-    </table>
+    @_snapshotsTable(contentId, draftSnapshots)
 
-    <h3>Live versions</h3>
-    <table class="table table-striped table-bordered table-hover">
-    @for(version <- liveVersions) {
-        <tr>
-            <td><a target="_blank" href="@routes.Versions.show(contentId, true, version)">@{new DateTime(version.split("_")(1)).toString("dd/MM/yyyy HH:mm:ss")}</a></td>
-            <td><button onclick="onRestoreBtnClick('@version', false)">Restore</button></td>
-        </tr>
-    }
-    </table>
+    <!-- Used in snapshots table -->
+    <div id="restore-modal"></div>
 }

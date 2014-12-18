@@ -1,0 +1,56 @@
+@(contentId: String, snapshots: List[String])
+@import org.joda.time.Duration
+@import org.joda.time.DateTime
+@import org.joda.time.format.PeriodFormat
+@import org.joda.time.format.PeriodFormatterBuilder
+
+@timeSinceLastSnapshot(currentSnapshot: String, snapshots: List[String]) = @{
+  // Format like "1 day, 24 minutes and 12 seconds".
+  val daysHoursMinutes = new PeriodFormatterBuilder()
+    .appendDays()
+    .appendSuffix(" day", " days")
+    .appendSeparator(", ")
+    .appendMinutes()
+    .appendSuffix(" minute", " minutes")
+    .appendSeparator(" and ")
+    .appendSeconds()
+    .appendSuffix(" second", " seconds")
+    .toFormatter()
+
+  // If there is no previous snapshot we don't return a value.
+  if (snapshots.indexOf(currentSnapshot) > 0) {
+    // Extract the snapshots' time from the id.
+    val currentSnapshotTime = new DateTime(currentSnapshot.split("/")(1))
+    val lastSnapshotTime = new DateTime(snapshots(snapshots.indexOf(currentSnapshot)  - 1).split("/")(1))
+
+
+    val timeBetweenSnapshots = new Duration(lastSnapshotTime, currentSnapshotTime).toPeriod()
+
+    // Regurn a formatted string.
+    daysHoursMinutes.print(timeBetweenSnapshots) + " between snapshots"
+  }
+}
+
+<table class="table">
+  <thead class="table-bordered table-hover snapshots-table__header">
+    <tr>
+      <th>Snapshot</th>
+      <th>Saved at</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+  @for(snapshot <- snapshots.reverse) {
+    <tr class="table-bordered table-hover snapshots-table__row">
+      <td>@{ snapshots.indexOf(snapshot) + 1 }</td>
+      <td><a target="_blank" href="@routes.Versions.show(contentId, false, snapshot)">@{new DateTime(snapshot.split("/")(1)).toString("dd/MM/yyyy HH:mm:ss")}</a></td>
+      <td>
+        <button class="btn btn-default btn-xs" onclick="modal('@routes.Versions.show(contentId, false, snapshot)', '@contentId')">Restore</button>
+      </td>
+    </tr>
+    <tr class="time-difference">
+      <td colspan="3">@timeSinceLastSnapshot(snapshot, snapshots)</td>
+    </tr>
+  }
+  </tbody>
+</table>
