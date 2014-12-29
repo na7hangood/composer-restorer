@@ -2,12 +2,7 @@ package s3
 
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.s3.AmazonS3Client
-import com.amazonaws.services.s3.model.PutObjectResult
-import com.amazonaws.services.s3.model.GetObjectRequest
-import com.amazonaws.services.s3.model.DeleteObjectRequest
-import com.amazonaws.services.s3.model.ObjectMetadata
-import com.amazonaws.services.s3.model.S3Object
-import com.amazonaws.services.s3.model.Region
+import com.amazonaws.services.s3.model._
 import java.io.ByteArrayInputStream
 import scala.collection.JavaConverters._
 import org.joda.time.DateTime
@@ -32,24 +27,21 @@ class S3 {
     s3Client.getObject(new GetObjectRequest(bucketName, key))
   }
 
-
   val listLiveSnapshots = listSnapshots(liveBucket)
   val listDraftSnapshots = listSnapshots(draftBucket)
 
-  private def listSnapshots(bucket: String): List[String] = {
-    val objects = s3Client.listObjects(bucket)
-    objects.getObjectSummaries().asScala.map(x => x.getKey()).toList
+  private def listSnapshots(bucket: String, id: Option[String] = None): List[String] = {
+    val request = new ListObjectsRequest().withBucketName(bucket)
+    val requestWithId = id.map { i =>
+      val key = idToKey(i)
+      request.withPrefix(key)
+    }.getOrElse(request)
+    val objects = s3Client.listObjects(requestWithId)
+    objects.getObjectSummaries.asScala.map(x => x.getKey).toList
   }
 
-  val listLiveForId: String => List[String] = listSnapshotsById(_, liveBucket)
-  val listDraftForId: String => List[String] = listSnapshotsById(_, draftBucket)
-
-  private def listSnapshotsById(id: String, bucket: String): List[String] = {
-    val key = idToKey(id)
-    val checkId: (String, String) =>  Boolean = getId(_).get == _
-    listSnapshots(bucket).filter(x => checkId(x, id))
-  }
-
+  val listLiveForId: String => List[String] = id => listSnapshots(liveBucket, Some(id))
+  val listDraftForId: String => List[String] = id => listSnapshots(draftBucket, Some(id))
 
 
   val deleteLive: String => Unit = deleteSnapshot(_, liveBucket)
