@@ -11,7 +11,7 @@ function getEnvironment() {
 // Get the URL to Composer within the same environment.
 function getComposerUrl() {
     var env = getEnvironment();
-    return env === 'production' ? 'https://composer.dev-gutools.co.uk'
+    return env === 'production' ? 'https://composer.gutools.co.uk'
                                 : 'https://composer.{{env}}.dev-gutools.co.uk'.replace('{{env}}', env);
 }
 
