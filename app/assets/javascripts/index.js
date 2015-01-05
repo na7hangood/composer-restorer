@@ -4,18 +4,15 @@ var request = require('superagent');
 var toArray = require("to-array");
 var handlebars = require('handlebars');
 
-/* TODO: Have a think about how to change this according to the environment we're in.
-   There are various libraries/patterns for Browserify. */
-var API_URL = 'https://composer.local.dev-gutools.co.uk/api';
-var COMPOSER_URL = 'https://composer.local.dev-gutools.co.uk';
+var helpers = require('./helpers');
 
-function restoreContentEndpoint(contentId) {
-    return API_URL + '/restorer/content/:contentId'.replace(':contentId', contentId);
-}
+// Set environment specific constants.
+var COMPOSER_URL = helpers.getComposerUrl();
+var API_URL = helpers.getApiUrl();
 
 function restore(archivedVersionPath, contentId, success, failure) {
     function updateContent(snapshot) {
-        request.put(restoreContentEndpoint(contentId))
+        request.put(helpers.restoreContentUrlFor(contentId))
             .withCredentials()
             .set('Content-Type', 'application/json;charset=utf-8') // we need to set this
             .send(snapshot)
