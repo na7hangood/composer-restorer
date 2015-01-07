@@ -21,10 +21,10 @@ class S3 {
   lazy val s3Client = new AmazonS3Client(credentials)
 
 
-  val getLiveSnapshot: String => S3Object = getSnapshot(_, liveBucket)
-  val getDraftSnapshot: String => S3Object = getSnapshot(_, draftBucket)
+  val getLiveSnapshot: String => S3Object = getObject(_, liveBucket)
+  val getDraftSnapshot: String => S3Object = getObject(_, draftBucket)
 
-  private def getSnapshot(key: String, bucketName: String): S3Object = {
+  def getObject(key: String, bucketName: String): S3Object = {
     s3Client.getObject(new GetObjectRequest(bucketName, key))
   }
 
@@ -41,9 +41,12 @@ class S3 {
     objects.getObjectSummaries.asScala.map(x => x.getKey).toList
   }
 
+  val getObjects: ListObjectsRequest => ObjectListing = s3Client.listObjects(_)
+  val objectRequest: String => ListObjectsRequest =
+    new ListObjectsRequest().withBucketName(_)
+
   val listLiveForId: String => List[String] = id => listSnapshots(liveBucket, Some(id))
   val listDraftForId: String => List[String] = id => listSnapshots(draftBucket, Some(id))
-
 
   val deleteLive: String => Unit = deleteSnapshot(_, liveBucket)
   val deleteDraft: String => Unit = deleteSnapshot(_, draftBucket)
@@ -83,7 +86,7 @@ class S3 {
 
   def saveItem(bucket: String, id: String, item: String): PutObjectResult = {
 
-    if(s3Client.doesBucketExist(bucket)) {
+    if(!s3Client.doesBucketExist(bucket)) {
       s3Client.createBucket(bucket, Region.EU_Ireland)
     }
 

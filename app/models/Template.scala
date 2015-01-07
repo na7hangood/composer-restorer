@@ -2,6 +2,8 @@ package models
 
 import play.api.libs.json._
 import org.joda.time.format.ISODateTimeFormat
+import scala.collection.JavaConverters._
+import scala.io.Source
 
 import s3._
 
@@ -11,18 +13,41 @@ case class Template(title: String, dateCreated: String, contents: JsValue)
 
 object Template {
 
-  def save(template: Template) = {
-    // for now defer to S3 but it might go to mongo
-    val s3 = new S3()
+  lazy val bucket = "composer-templates-dev"
+  lazy val s3 = new S3()
 
-    s3.saveItem("composer-templates",
-      template.title + template.dateCreated,
-
-      Json.stringify(Json.toJson(Map(
+  implicit val templateWrites: Writes[Template] = new Writes[Template] {
+    def writes(template: Template): JsValue = {
+      Json.toJson(Map(
         "title" -> template.title,
         "dateCreated" -> template.dateCreated,
         "contents" -> Json.stringify(template.contents)
-      )))
-    )
+      ))
+    }
   }
+
+
+  def save(template: Template) = {
+    // for now defer to S3 but it might go to mongo
+    s3.saveItem(
+      bucket,
+      template.title + "_" + template.dateCreated,
+      Json.stringify(Json.toJson(template)))
+  }
+
+  def retrieveAll() = {
+    val req = s3.objectRequest(bucket)
+    val objects = s3.getObjects(req).getObjectSummaries.asScala.toList
+    val keys = objects.map(x => x.getKey())
+    val results = keys.map(s3.getObject(_, bucket))
+    results.map({ x =>
+      val json = Json.parse(Source.fromInputStream(x.getObjectContent(), "UTF-8").mkString)
+      Template(
+        (json \ "title").toString,
+        (json \ "dateCreated").toString,
+        json \ "contents")
+    })
+  }
+
+  def retrieve(id: String) = {}
 }

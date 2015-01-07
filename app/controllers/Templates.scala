@@ -43,7 +43,8 @@ object Templates extends Controller with PanDomainAuthActions {
 
   def index = CORSable(composer) {
     Action {
-      Ok("Got templates")
+      val res = Json.toJson(Template.retrieveAll())
+      Ok(res)
     }
   }
 
@@ -59,7 +60,7 @@ object Templates extends Controller with PanDomainAuthActions {
       val template = Template(
         (request.body \ "title").toString,
         ISODateTimeFormat.dateTime.print(LocalDateTime.now),
-        request.body \ "data"
+        request.body \ "contents"
       )
 
       Template.save(template)
