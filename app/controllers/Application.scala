@@ -28,11 +28,13 @@ trait PanDomainAuthActions extends AuthActions {
   override lazy val system: String = "composer-restorer"
 }
 
+
 object Application extends Controller with PanDomainAuthActions {
 
   val urlForm = Form(
     "url" -> nonEmptyText
   )
+
   def index = AuthAction {
     Ok(views.html.Application.index())
   }
@@ -47,4 +49,5 @@ object Application extends Controller with PanDomainAuthActions {
     {url => Redirect(controllers.routes.Versions.index(extractContentId(url)))}
     )
   }
+
 }

@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model._
 import java.io.ByteArrayInputStream
 import scala.collection.JavaConverters._
 import org.joda.time.DateTime
+import play.api.libs.json.Json
 
 class S3 {
   import play.api.Play.current
@@ -77,5 +78,20 @@ class S3 {
 
     retiredLives.map(deleteLive)
     retiredDrafts.map(deleteDraft)
+  }
+
+
+  def saveItem(bucket: String, id: String, item: String): PutObjectResult = {
+
+    if(s3Client.doesBucketExist(bucket)) {
+      s3Client.createBucket(bucket, Region.EU_Ireland)
+    }
+
+    val contentLength = item.getBytes().length;
+    val metaData = new ObjectMetadata();
+    metaData.setContentType("application/json; charset=utf-8")
+    metaData.setContentLength(contentLength);
+
+    s3Client.putObject(bucket, id, new ByteArrayInputStream(item.getBytes()), metaData)
   }
 }
