@@ -11,7 +11,6 @@ import s3._
 case class Template(title: String, dateCreated: String, contents: JsValue)
 
 object Template {
-
   lazy val bucket = "composer-templates-dev"
   lazy val s3 = new S3()
 
@@ -25,7 +24,6 @@ object Template {
       ))
     }
   }
-
 
   def save(template: Template) = {
     // for now defer to S3 but it might go to mongo
