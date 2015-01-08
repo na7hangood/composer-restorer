@@ -7,9 +7,8 @@ import scala.io.Source
 
 import s3._
 
-/* Template just has a name and contains a JSON object - which is the ContentRaw*/
+/* Template just has a name and contains a JSON object - which is the ContentRaw */
 case class Template(title: String, dateCreated: String, contents: JsValue)
-
 
 object Template {
 
@@ -17,6 +16,7 @@ object Template {
   lazy val s3 = new S3()
 
   implicit val templateWrites: Writes[Template] = new Writes[Template] {
+
     def writes(template: Template): JsValue = {
       Json.toJson(Map(
         "title" -> template.title,
@@ -29,6 +29,8 @@ object Template {
 
   def save(template: Template) = {
     // for now defer to S3 but it might go to mongo
+    println("Template title: " + template.title)
+
     s3.saveItem(
       bucket,
       template.title + "_" + template.dateCreated,
@@ -43,8 +45,8 @@ object Template {
     results.map({ x =>
       val json = Json.parse(Source.fromInputStream(x.getObjectContent(), "UTF-8").mkString)
       Template(
-        (json \ "title").toString,
-        (json \ "dateCreated").toString,
+        (json \ "title").toString.toString.replaceAll("\"", ""), //wtf do I have to do this?,
+        (json \ "dateCreated").toString.toString.replaceAll("\"", ""), //wtf do I have to do this?,
         json \ "contents")
     })
   }
