@@ -27,7 +27,6 @@ object Template {
 
   def save(template: Template) = {
     // for now defer to S3 but it might go to mongo
-    println("Template title: " + template.title)
 
     s3.saveItem(
       bucket,

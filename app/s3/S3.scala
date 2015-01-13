@@ -90,11 +90,10 @@ class S3 {
       s3Client.createBucket(bucket, Region.EU_Ireland)
     }
 
-    val contentLength = item.getBytes().length;
-    val metaData = new ObjectMetadata();
+    val contentLength = item.getBytes().length
+    val metaData = new ObjectMetadata()
     metaData.setContentType("application/json; charset=utf-8")
-    metaData.setContentLength(contentLength);
-
+    metaData.setContentLength(contentLength)
     s3Client.putObject(bucket, id, new ByteArrayInputStream(item.getBytes()), metaData)
   }
 }
