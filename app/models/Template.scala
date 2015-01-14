@@ -14,7 +14,11 @@ case class Template(title: String, dateCreated: String, contents: String)
 case class TemplateSummary(title: String, dateCreated: String)
 
 object Template {
-  lazy val bucket = "composer-templates-dev"
+  import play.api.Play.current
+
+  lazy val config = play.api.Play.configuration
+  lazy val bucket: String = config.getString("templates.bucket").get
+
   lazy val s3 = new S3()
 
   implicit val templateWrites: Writes[Template] = new Writes[Template] {
