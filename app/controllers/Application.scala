@@ -45,8 +45,8 @@ object Application extends Controller with PanDomainAuthActions {
       .split("/").last.trim // get the id
 
     urlForm.bindFromRequest.fold(
-    {errorForm => Redirect(controllers.routes.Application.index)},
-    {url => Redirect(controllers.routes.Versions.index(extractContentId(url)))}
+      {errorForm => Redirect(controllers.routes.Application.index)},
+      {url => Redirect(controllers.routes.Versions.index(extractContentId(url)))}
     )
   }
 
