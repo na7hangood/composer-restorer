@@ -22,4 +22,4 @@ GET  /templates                                controllers.Templates.index
 GET  /templates/:title                         controllers.Templates.getTemplate(title: String)
 POST /templates/createTemplate                 controllers.Templates.saveTemplate
 
-OPTIONS        /*all                           controllers.Templates.preflight(all: String)
+OPTIONS        /*all                           controllers.Application.preflight(all: String)
