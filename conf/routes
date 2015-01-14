@@ -15,3 +15,11 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 # Versions
 GET     /content/:contentId/versions/version                   controllers.Versions.show(contentId: String, isLive: Boolean, versionId: String)
 GET     /content/:contentId/versions                           controllers.Versions.index(contentId: String)
+
+
+# Templates
+GET  /templates                                controllers.Templates.index
+GET  /templates/:title                         controllers.Templates.getTemplate(title: String)
+POST /templates/createTemplate                 controllers.Templates.saveTemplate
+
+OPTIONS        /*all                           controllers.Application.preflight(all: String)

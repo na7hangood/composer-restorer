@@ -10,6 +10,7 @@ import play.api.data.Forms._
 // Pan domain
 import com.gu.pandomainauth.action.AuthActions
 import com.gu.pandomainauth.model.AuthenticatedUser
+import helpers.CORSable
 
 trait PanDomainAuthActions extends AuthActions {
 
@@ -28,11 +29,15 @@ trait PanDomainAuthActions extends AuthActions {
   override lazy val system: String = "composer-restorer"
 }
 
+
 object Application extends Controller with PanDomainAuthActions {
+
+  lazy val composer = config.getString("composer.domain").get
 
   val urlForm = Form(
     "url" -> nonEmptyText
   )
+
   def index = AuthAction {
     Ok(views.html.Application.index())
   }
@@ -43,8 +48,18 @@ object Application extends Controller with PanDomainAuthActions {
       .split("/").last.trim // get the id
 
     urlForm.bindFromRequest.fold(
-    {errorForm => Redirect(controllers.routes.Application.index)},
-    {url => Redirect(controllers.routes.Versions.index(extractContentId(url)))}
+      {errorForm => Redirect(controllers.routes.Application.index)},
+      {url => Redirect(controllers.routes.Versions.index(extractContentId(url)))}
     )
+  }
+
+  def preflight(routes: String) = CORSable(composer) {
+    Action { implicit req =>
+      val requestedHeaders = req.headers("Access-Control-Request-Headers")
+
+      NoContent.withHeaders(
+        CORSable.CORS_ALLOW_METHODS -> "GET, DELETE, PUT",
+        CORSable.CORS_ALLOW_HEADERS -> requestedHeaders)
+    }
   }
 }
