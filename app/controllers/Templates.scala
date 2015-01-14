@@ -48,9 +48,10 @@ object Templates extends Controller with PanDomainAuthActions {
     }
   }
 
-  def getTemplate(title: String) = CORSable(composer) {
+  def getTemplate(key: String) = CORSable(composer) {
     Action {
-      Ok("Got a single template")
+      val res = Json.toJson(Template.retrieve(key))
+      Ok(res)
     }
   }
 
