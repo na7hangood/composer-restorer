@@ -58,9 +58,9 @@ object Templates extends Controller with PanDomainAuthActions {
     Action(parse.json) { request =>
 
       val template = Template(
-        (request.body \ "title").toString.replaceAll("\"", ""), //wtf do I have to do this?
+        (request.body \ "title").as[String],
         ISODateTimeFormat.dateTime.print(LocalDateTime.now),
-        request.body \ "contents"
+        (request.body \ "contents").as[String]
       )
 
       Template.save(template)

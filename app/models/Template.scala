@@ -7,8 +7,10 @@ import scala.io.Source
 
 import s3._
 
-/* Template just has a name and contains a JSON object - which is the ContentRaw */
-case class Template(title: String, dateCreated: String, contents: JsValue)
+/* Template is just strings. We repreent the contentRaw as an enormous string
+ * so we don't have to copy any models over or anything
+ * */
+case class Template(title: String, dateCreated: String, contents: String)
 
 object Template {
   lazy val bucket = "composer-templates-dev"
@@ -20,7 +22,7 @@ object Template {
       Json.toJson(Map(
         "title" -> template.title,
         "dateCreated" -> template.dateCreated,
-        "contents" -> Json.stringify(template.contents)
+        "contents" -> template.contents
       ))
     }
   }
@@ -42,9 +44,9 @@ object Template {
     results.map({ x =>
       val json = Json.parse(Source.fromInputStream(x.getObjectContent(), "UTF-8").mkString)
       Template(
-        (json \ "title").toString.toString.replaceAll("\"", ""), //wtf do I have to do this?,
-        (json \ "dateCreated").toString.toString.replaceAll("\"", ""), //wtf do I have to do this?,
-        json \ "contents")
+        (json \ "title").as[String],
+        (json \ "dateCreated").as[String],
+        (json \ "contents").as[String])
     })
   }
 
