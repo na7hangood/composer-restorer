@@ -13,5 +13,9 @@ lazy val mainProject = project.in(file("."))
   .enablePlugins(PlayScala, RiffRaffArtifact)
   .settings(Defaults.coreDefaultSettings: _*)
   .settings(
+    // Never interested in the version number in the artifact name
+    name in Universal := normalizedName.value,
+    // Publish to subdirectory
+    riffRaffArtifactPublishPath := normalizedName.value,
     riffRaffPackageType := (packageZipTarball in config("universal")).value
   )
