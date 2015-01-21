@@ -1,3 +1,5 @@
+import com.typesafe.sbt.packager.Keys._
+
 name := "composer-restorer"
 
 version := "0.0.1"
@@ -6,3 +8,10 @@ libraryDependencies ++= Seq(
   "com.gu" %% "pan-domain-auth-play" % "0.1.10",
   ws
 )
+
+lazy val mainProject = project.in(file("."))
+  .enablePlugins(PlayScala, RiffRaffArtifact)
+  .settings(Defaults.coreDefaultSettings: _*)
+  .settings(
+    riffRaffPackageType := (packageZipTarball in config("universal")).value
+  )

@@ -1,0 +1,25 @@
+{
+  "defaultStacks": ["flexible"],
+  "packages": {
+    "restorer" : {
+      "type": "autoscaling",
+      "data": {
+        "bucket": "composer-dist",
+        "publicReadAcl": false
+      }
+    }
+  },
+  "recipes": {
+    "default": {
+      "depends": ["artifactUploadOnly", "deployOnly"]
+    },
+
+    "deployOnly": {
+      "actionsBeforeApp": ["restorer.deploy"]
+    },
+
+    "artifactUploadOnly": {
+      "actionsBeforeApp": ["restorer.uploadArtifacts"]
+    }
+  }
+}
