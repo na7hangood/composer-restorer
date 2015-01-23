@@ -8,6 +8,14 @@
         "bucket": "composer-dist",
         "publicReadAcl": false
       }
+    },
+    "restorer-cloudformation" : {
+      "type": "cloud-formation",
+      "fileName": "cloudformation",
+      "data": {
+        "templatePath": "restorer.json",
+        "cloudFormationStackName": "Restorer"
+      }
     }
   },
   "recipes": {
