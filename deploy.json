@@ -29,6 +29,10 @@
 
     "artifactUploadOnly": {
       "actionsBeforeApp": ["restorer.uploadArtifacts"]
+    },
+
+    "restorer-cloudformation": {
+      "actions": ["restorer-cloudformation.updateStack"]
     }
   }
 }
