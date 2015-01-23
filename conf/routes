@@ -23,3 +23,6 @@ GET  /templates/:title                         controllers.Templates.getTemplate
 POST /templates/createTemplate                 controllers.Templates.saveTemplate
 
 OPTIONS        /*all                           controllers.Application.preflight(all: String)
+
+# Health check
+GET /management/healthcheck                    controllers.Management.healthCheck
