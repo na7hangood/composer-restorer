@@ -315,7 +315,7 @@
                 "source": { "Fn::Join" : ["", [
                   "https://s3-eu-west-1.amazonaws.com/composer-dist/composer/",
                   { "Ref": "Stage" },
-                  "/restorer/composer-restorer.conf"
+                  "/composer-restorer/composer-restorer.conf"
                 ]]},
                 "authentication": "distributionAuthentication"
               },
@@ -326,7 +326,7 @@
                     [
                       "https://s3-eu-west-1.amazonaws.com/composer-dist/composer/",
                       {"Ref": "Stage"},
-                      "/restorer/composer-restorer.tgz"
+                      "/composer-restorer/composer-restorer.tgz"
                     ]
                   ]
                 },
