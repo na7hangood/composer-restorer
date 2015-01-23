@@ -41,7 +41,9 @@
   },
   "Mappings": {
     "SSLCertificateId": {
-      "CODE": "arn:aws:iam::743583969668:server-certificate/sites.code.dev-gutools.co.uk-exp2023-08-15"
+      "Environment": {
+        "CODE": "arn:aws:iam::743583969668:server-certificate/sites.code.dev-gutools.co.uk-exp2023-08-15"
+      }
     }
   },
   "Resources": {
@@ -250,6 +252,7 @@
             "SSLCertificateId": {
               "Fn::FindInMap": [
                 "SSLCertificateId",
+                "Environment",
                 {"Ref": "Stage"}
               ]
             }
