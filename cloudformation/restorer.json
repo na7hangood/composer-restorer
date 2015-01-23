@@ -37,10 +37,11 @@
       "Description": "Ip range for the office",
       "Type": "String",
       "Default": "77.91.248.0/21"
-    },
+    }
+  },
+  "Mappings": {
     "SSLCertificateId": {
-      "Description": "ARN of the SSL certificate",
-      "Type": "String"
+      "CODE": "arn:aws:iam::743583969668:server-certificate/sites.code.dev-gutools.co.uk-exp2023-08-15"
     }
   },
   "Resources": {
@@ -247,7 +248,10 @@
             "InstancePort": "9000",
             "Protocol": "HTTPS",
             "SSLCertificateId": {
-              "Ref": "SSLCertificateId"
+              "Fn::FindInMap": [
+                "SSLCertificateId",
+                {"Ref": "Stage"}
+              ]
             }
           }
         ],
