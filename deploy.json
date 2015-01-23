@@ -3,6 +3,7 @@
   "packages": {
     "restorer" : {
       "type": "autoscaling",
+      "fileName": "composer-restorer",
       "data": {
         "bucket": "composer-dist",
         "publicReadAcl": false
