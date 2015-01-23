@@ -374,7 +374,7 @@
                 "(cd /home/restorer; tar xvzf composer-restorer.tgz)\n",
                 "chown -R restorer /home/restorer\n",
                 "chgrp -R restorer /home/restorer\n",
-                "start restorer\n"
+                "start composer-restorer\n"
               ]
             ]
           }
