@@ -4,7 +4,7 @@ import com.amazonaws.services.s3.model.S3Object
 import play.api.mvc._
 import play.api.libs.json.Json
 
-import s3.S3
+import aws.s3.S3
 
 import scala.io.Source
 

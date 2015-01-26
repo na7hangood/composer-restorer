@@ -1,21 +1,24 @@
-package s3
+package aws.s3
 
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model._
 import java.io.ByteArrayInputStream
+import configuration.RestorerConfig
+
 import scala.collection.JavaConverters._
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 
 class S3 {
   import play.api.Play.current
-  lazy val config = play.api.Play.configuration
 
-  lazy val draftBucket: String = config.getString("s3.draftbucket").get
-  lazy val liveBucket: String = config.getString("s3.livebucket").get
-  lazy val accessKey: String = config.getString("AWS_ACCESS_KEY").get
-  lazy val secretKey: String = config.getString("AWS_SECRET_KEY").get
+  lazy val config = RestorerConfig()
+
+  lazy val draftBucket: String = config.draftBucket
+  lazy val liveBucket: String = config.liveBucket
+  lazy val accessKey: String = config.accessKey
+  lazy val secretKey: String = config.secretKey
 
   lazy val credentials = new BasicAWSCredentials(accessKey, secretKey)
   lazy val s3Client = new AmazonS3Client(credentials)

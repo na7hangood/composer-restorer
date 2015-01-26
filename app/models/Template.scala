@@ -5,7 +5,7 @@ import org.joda.time.format.ISODateTimeFormat
 import scala.collection.JavaConverters._
 import scala.io.Source
 
-import s3._
+import aws.s3._
 
 /* Template is just strings. We repreent the contentRaw as an enormous string
  * so we don't have to copy any models over or anything
