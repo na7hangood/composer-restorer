@@ -195,6 +195,21 @@
         ]
       }
     },
+    "PingSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Allow pinging of the instance",
+        "VpcId": {"Ref": "VpcId"},
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "icmp",
+            "FromPort": "8",
+            "ToPort": "-1",
+            "CidrIp": "10.0.0.0/0"
+          }
+        ]
+      }
+    },
     "AppServerSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
@@ -348,7 +363,8 @@
         "ImageId": "ami-f4b11183",
         "SecurityGroups": [
           {"Ref": "AppServerSecurityGroup"},
-          {"Ref": "SSHSecurityGroup"}
+          {"Ref": "SSHSecurityGroup"},
+          {"Ref": "PingSecurityGroup"}
         ],
         "InstanceType": "t2.micro",
         "IamInstanceProfile": {"Ref": "RestorerInstanceProfile"},
