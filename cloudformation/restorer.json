@@ -1,0 +1,408 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "restorer",
+  "Parameters": {
+    "KeyName": {
+      "Description": "The EC2 Key Pair to allow SSH access to the instance",
+      "Type": "String",
+      "Default": "composer-team"
+    },
+    "Stage": {
+      "Description": "Environment name",
+      "Type": "String",
+      "AllowedValues": [
+        "PROD",
+        "CODE",
+        "QA",
+        "RELEASE",
+        "TEST"
+      ]
+    },
+    "VpcId": {
+      "Description": "ID of the VPC onto which to launch the application eg. vpc-1234abcd",
+      "Type": "String",
+      "Default": "vpc-143ef571"
+    },
+    "PublicVpcSubnets": {
+      "Description": "Subnets to use in VPC for public internet-facing ELB eg. subnet-abcd1234",
+      "Type": "CommaDelimitedList",
+      "Default": "subnet-101f9875, subnet-4f17bb38, subnet-90d414c9"
+    },
+    "PrivateVpcSubnets": {
+      "Description": "Subnets to use in VPC for private EC2 instances eg. subnet-abcd1234",
+      "Type": "CommaDelimitedList",
+      "Default": "subnet-131f9876, subnet-4e17bb39, subnet-93d414ca"
+    },
+    "GuardianIP": {
+      "Description": "Ip range for the office",
+      "Type": "String",
+      "Default": "77.91.248.0/21"
+    }
+  },
+  "Mappings": {
+    "SSLCertificateId": {
+      "Environment": {
+        "CODE": "arn:aws:iam::743583969668:server-certificate/sites.code.dev-gutools.co.uk-exp2023-08-15"
+      }
+    }
+  },
+  "Resources": {
+    "RestorerRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": ["ec2.amazonaws.com"]
+              },
+              "Action": ["sts:AssumeRole"]
+            }
+          ]
+        },
+        "Path": "/"
+      }
+    },
+    "RestorerDescribeEC2Policy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "RestorerDescribeEC2Policy",
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": ["EC2:Describe*"],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ]
+        },
+        "Roles": [{"Ref": "RestorerRole"}]
+      }
+    },
+    "RestorerGetDistributablesPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "RestorerGetDistributablesPolicy",
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": ["s3:GetObject"],
+              "Resource": ["arn:aws:s3:::composer-dist/*"]
+            }
+          ]
+        },
+        "Roles": [{"Ref": "RestorerRole"}]
+      }
+    },
+    "RestorerSnapshotBucketPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "RestorerSnapshotBucketPolicy",
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": ["s3:ListBucket"],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::composer-snapshots-draft-",
+                      {"Ref": "Stage"}
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::composer-snapshots-live-",
+                      {"Ref": "Stage"}
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": ["s3:GetObject"],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::composer-snapshots-draft-",
+                      {"Ref": "Stage"},
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::composer-snapshots-live-",
+                      {"Ref": "Stage"},
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "Roles": [{"Ref": "RestorerRole"}]
+      }
+    },
+    "RestorerCloudwatchPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "RestorerCloudwatchPolicy",
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": ["cloudwatch:*"],
+              "Resource": "*"
+            }
+          ]
+        },
+        "Roles": [{"Ref": "RestorerRole"}]
+      }
+    },
+    "RestorerInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [{"Ref": "RestorerRole"}]
+      }
+    },
+    "SSHSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Allow SSH access from the office",
+        "VpcId": {"Ref": "VpcId"},
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": "10.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "PingSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Allow pinging of the instance",
+        "VpcId": {"Ref": "VpcId"},
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "icmp",
+            "FromPort": "8",
+            "ToPort": "-1",
+            "CidrIp": "10.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "AppServerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "application servers",
+        "VpcId": {"Ref": "VpcId"},
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 9000,
+            "ToPort": 9000,
+            "CidrIp": "10.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 9000,
+            "ToPort": 9000,
+            "SourceSecurityGroupId": {"Ref": "LoadBalancerSecurityGroup"}
+          }
+        ]
+      }
+    },
+    "LoadBalancerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "load balancer",
+        "VpcId": {"Ref": "VpcId"},
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "RestorerLoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "LoadBalancerSecurityGroup",
+              "GroupId"
+            ]
+          }
+        ],
+        "CrossZone": true,
+        "Subnets": {"Ref": "PublicVpcSubnets"},
+        "Listeners": [
+          {
+            "LoadBalancerPort": "443",
+            "InstancePort": "9000",
+            "Protocol": "HTTPS",
+            "SSLCertificateId": {
+              "Fn::FindInMap": [
+                "SSLCertificateId",
+                "Environment",
+                {"Ref": "Stage"}
+              ]
+            }
+          }
+        ],
+        "HealthCheck": {
+          "Target": "HTTP:9000/management/healthcheck",
+          "HealthyThreshold": "2",
+          "UnhealthyThreshold": "2",
+          "Interval": "10",
+          "Timeout": "5"
+        }
+      }
+    },
+    "AutoscalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "AvailabilityZones": {"Fn::GetAZs": ""},
+        "VPCZoneIdentifier": {"Ref": "PrivateVpcSubnets"},
+        "LaunchConfigurationName": {"Ref": "RestorerLaunchConfig"},
+        "MinSize": "1",
+        "MaxSize": "2",
+        "DesiredCapacity": "1",
+        "HealthCheckType": "ELB",
+        "HealthCheckGracePeriod": 300,
+        "LoadBalancerNames": [{"Ref": "RestorerLoadBalancer"}],
+        "Tags": [
+          {
+            "Key": "Stage",
+            "Value": {
+              "Ref": "Stage"
+            },
+            "PropagateAtLaunch": "true"
+          },
+          {
+            "Key": "Stack",
+            "Value": "composer",
+            "PropagateAtLaunch": "true"
+          },
+          {
+            "Key": "App",
+            "Value": "restorer",
+            "PropagateAtLaunch": "true"
+          }
+        ]
+      }
+    },
+    "RestorerLaunchConfig": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Metadata": {
+        "AWS::CloudFormation::Authentication": {
+          "distributionAuthentication": {
+            "type": "S3",
+            "roleName": {"Ref": "RestorerRole"},
+            "buckets": ["composer-dist"]
+          }
+        },
+        "AWS::CloudFormation::Init": {
+          "config": {
+            "users": {
+              "restorer": {
+                "homeDir": "/home/restorer"
+              }
+            },
+            "files": {
+              "/etc/init/composer-restorer.conf": {
+                "source": { "Fn::Join" : ["", [
+                  "https://s3-eu-west-1.amazonaws.com/composer-dist/composer/",
+                  { "Ref": "Stage" },
+                  "/composer-restorer/composer-restorer.conf"
+                ]]},
+                "authentication": "distributionAuthentication"
+              },
+              "/home/restorer/composer-restorer.tgz": {
+                "source": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "https://s3-eu-west-1.amazonaws.com/composer-dist/composer/",
+                      {"Ref": "Stage"},
+                      "/composer-restorer/composer-restorer.tgz"
+                    ]
+                  ]
+                },
+                "authentication": "distributionAuthentication"
+              }
+            }
+          }
+        }
+      },
+      "Properties": {
+        "KeyName": {"Ref": "KeyName"},
+        "ImageId": "ami-f4b11183",
+        "SecurityGroups": [
+          {"Ref": "AppServerSecurityGroup"},
+          {"Ref": "SSHSecurityGroup"},
+          {"Ref": "PingSecurityGroup"}
+        ],
+        "InstanceType": "t2.micro",
+        "IamInstanceProfile": {"Ref": "RestorerInstanceProfile"},
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash -ev\n",
+                "apt-get -y update\n",
+                "locale-gen en_GB.UTF-8\n",
+                "apt-get -y install openjdk-7-jre-headless\n",
+                "apt-get -y install python-setuptools\n",
+                "apt-get -y install unzip\n",
+                "wget -P /root https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz",
+                "\n",
+                "mkdir -p /root/aws-cfn-bootstrap-latest",
+                "\n",
+                "tar xvfz /root/aws-cfn-bootstrap-latest.tar.gz --strip-components=1 -C /root/aws-cfn-bootstrap-latest",
+                "\n",
+                "easy_install /root/aws-cfn-bootstrap-latest/",
+                "\n",
+                "cfn-init -s ",
+                {"Ref": "AWS::StackId"},
+                " -r RestorerLaunchConfig ",
+                "  --region ",
+                {"Ref": "AWS::Region"},
+                " || error_exit 'Failed to run cfn-init'\n",
+                "mkdir /home/restorer/logs\n",
+                "(cd /home/restorer; tar xvzf composer-restorer.tgz)\n",
+                "chown -R restorer /home/restorer\n",
+                "chgrp -R restorer /home/restorer\n",
+                "start composer-restorer\n"
+              ]
+            ]
+          }
+        }
+      }
+    }
+  }
+}

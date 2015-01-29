@@ -1,0 +1,38 @@
+{
+  "defaultStacks": ["composer"],
+  "packages": {
+    "restorer" : {
+      "type": "autoscaling",
+      "fileName": "composer-restorer",
+      "data": {
+        "bucket": "composer-dist",
+        "publicReadAcl": false
+      }
+    },
+    "restorer-cloudformation" : {
+      "type": "cloud-formation",
+      "fileName": "cloudformation",
+      "data": {
+        "templatePath": "restorer.json",
+        "cloudFormationStackName": "Restorer"
+      }
+    }
+  },
+  "recipes": {
+    "default": {
+      "depends": ["artifactUploadOnly", "deployOnly"]
+    },
+
+    "deployOnly": {
+      "actionsBeforeApp": ["restorer.deploy"]
+    },
+
+    "artifactUploadOnly": {
+      "actionsBeforeApp": ["restorer.uploadArtifacts"]
+    },
+
+    "restorer-cloudformation": {
+      "actions": ["restorer-cloudformation.updateStack"]
+    }
+  }
+}
