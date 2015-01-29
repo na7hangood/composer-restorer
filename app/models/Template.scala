@@ -6,6 +6,7 @@ import scala.collection.JavaConverters._
 import scala.io.Source
 
 import s3._
+import config.RestorerConfig
 
 /* Template is just strings. We repreent the contentRaw as an enormous string
  * so we don't have to copy any models over or anything
@@ -14,10 +15,8 @@ case class Template(title: String, dateCreated: String, contents: String)
 case class TemplateSummary(title: String, dateCreated: String)
 
 object Template {
-  import play.api.Play.current
 
-  lazy val config = play.api.Play.configuration
-  lazy val bucket: String = config.getString("templates.bucket").get
+  lazy val bucket: String = RestorerConfig.templatesBucket
 
   lazy val s3 = new S3()
 

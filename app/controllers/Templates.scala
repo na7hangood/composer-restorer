@@ -9,10 +9,11 @@ import org.joda.time.LocalDateTime
 import helpers.CORSable
 
 import models.Template
+import config.RestorerConfig
 
 object Templates extends Controller with PanDomainAuthActions {
 
-  lazy val composer = config.getString("composer.domain").get
+  lazy val composer = RestorerConfig.composerDomain
 
   def index = CORSable(composer) {
     Action {
