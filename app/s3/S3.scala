@@ -1,25 +1,28 @@
 package s3
 
-import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.auth.{BasicAWSCredentials, DefaultAWSCredentialsProviderChain}
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model._
 import java.io.ByteArrayInputStream
 import scala.collection.JavaConverters._
 import org.joda.time.DateTime
 import play.api.libs.json.Json
+import config._
 
 class S3 {
   import play.api.Play.current
-  lazy val config = play.api.Play.configuration
+  lazy val config = RestorerConfig
 
-  lazy val draftBucket: String = config.getString("s3.draftbucket").get
-  lazy val liveBucket: String = config.getString("s3.livebucket").get
-  lazy val accessKey: String = config.getString("AWS_ACCESS_KEY").get
-  lazy val secretKey: String = config.getString("AWS_SECRET_KEY").get
+  lazy val draftBucket: String = config.draftBucket
+  lazy val liveBucket: String = config.liveBucket
+  val accessKeys = Seq(config.accessKey ++ config.secretKey).flatten
 
-  lazy val credentials = new BasicAWSCredentials(accessKey, secretKey)
-  lazy val s3Client = new AmazonS3Client(credentials)
-
+  val s3Client = {
+    if (accessKeys.length == 2)
+      new AmazonS3Client(new BasicAWSCredentials(accessKeys(0), accessKeys(1)))
+    else
+      new AmazonS3Client(new DefaultAWSCredentialsProviderChain())
+  }
 
   val getLiveSnapshot: String => S3Object = getObject(_, liveBucket)
   val getDraftSnapshot: String => S3Object = getObject(_, draftBucket)
