@@ -16,13 +16,13 @@ object RestorerConfig extends AwsInstanceTags {
 
   val domain: String = stage match {
     case "PROD" => ".gutools.co.uk"
-    case "DEV" => "local.dev-gutools.co.uk"
+    case "DEV" => ".local.dev-gutools.co.uk"
     case x => x.toLowerCase() + ".dev-gutools.co.uk"
   }
 
   val composerDomain: String = "https://composer" + domain
 
-  val hostName: String = "https://composer-restorer." + domain
+  val hostName: String = "https://composer-restorer" + domain
 
   lazy val config = play.api.Play.configuration
 
