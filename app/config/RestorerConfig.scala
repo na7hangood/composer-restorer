@@ -16,12 +16,13 @@ object RestorerConfig extends AwsInstanceTags {
 
   val domain: String = stage match {
     case "PROD" => ".gutools.co.uk"
-    case x => x + ".dev-gutools.co.uk"
+    case "DEV" => "local.dev-gutools.co.uk"
+    case x => x.toLowerCase() + ".dev-gutools.co.uk"
   }
 
-  val composerDomain: String = "https://composer" + stage.toLowerCase() +domain
+  val composerDomain: String = "https://composer" + domain
 
-  val hostName: String = "https://composer-restorer" + stage.toLowerCase() + domain
+  val hostName: String = "https://composer-restorer." + domain
 
   lazy val config = play.api.Play.configuration
 
@@ -29,5 +30,4 @@ object RestorerConfig extends AwsInstanceTags {
   val secretKey: Option[String] = config.getString("AWS_SECRET_KEY")
   val pandomainKey: Option[String] = config.getString("pandomain.aws.key")
   val pandomainSecret: Option[String] = config.getString("pandomain.aws.secret")
-
 }
