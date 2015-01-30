@@ -15,10 +15,6 @@ import config.RestorerConfig
 import com.amazonaws.auth.BasicAWSCredentials
 
 trait PanDomainAuthActions extends AuthActions {
-
-  import play.api.Play.current
-  lazy val config = play.api.Play.configuration
-
   override def validateUser(authedUser: AuthenticatedUser): Boolean = {
     (authedUser.user.email endsWith ("@guardian.co.uk")) && authedUser.multiFactor
   }
@@ -29,8 +25,8 @@ trait PanDomainAuthActions extends AuthActions {
 
 
   override lazy val awsCredentials =
-    for (key <- RestorerConfig.accessKey;
-      secret <- RestorerConfig.secretKey)
+    for (key <- RestorerConfig.pandomainKey;
+      secret <- RestorerConfig.pandomainSecret)
       yield { new BasicAWSCredentials(key, secret) }
 }
 
