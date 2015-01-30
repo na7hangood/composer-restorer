@@ -63,4 +63,17 @@ object Application extends Controller with PanDomainAuthActions {
         CORSable.CORS_ALLOW_HEADERS -> requestedHeaders)
     }
   }
+
+  def info = AuthAction {
+    val info = Seq(
+      "Hostname: " + RestorerConfig.hostName,
+      "Composer Domain: " + RestorerConfig.composerDomain,
+      "Templates Bucket: " + RestorerConfig.templatesBucket,
+      "Snapshots draft bucket: " + RestorerConfig.draftBucket,
+      "Snapshots live bucket: " + RestorerConfig.liveBucket
+    ).mkString("\n")
+
+    Ok(info)
+  }
+
 }
