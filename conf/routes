@@ -26,3 +26,4 @@ OPTIONS        /*all                           controllers.Application.preflight
 
 # Health check
 GET /management/healthcheck                    controllers.Management.healthCheck
+GET /management/info                           controllers.Application.info
