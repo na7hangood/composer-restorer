@@ -20,6 +20,8 @@ object RestorerConfig extends AwsInstanceTags {
 
   val composerDomain: String = "https://composer" + domain
 
+  val hostName: String = "https://composer-restorer" + domain
+
   lazy val config = play.api.Play.configuration
 
   val accessKey: Option[String] = config.getString("AWS_ACCESS_KEY")
