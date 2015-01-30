@@ -44,7 +44,16 @@
       "Environment": {
         "CODE": "arn:aws:iam::743583969668:server-certificate/sites.code.dev-gutools.co.uk-exp2023-08-15"
       }
-    }
+    },
+      "EnvironmentMap": {
+          "CODE": {"lowercase": "code"},
+          "RELEASE": {"lowercase": "release"},
+          "QA": {"lowercase": "qa"},
+          "TEST": {"lowercase": "test"},
+          "CODE": {"lowercase": "code"},
+          "PROD": {"lowercase": "prod"}
+      }
+
   },
   "Resources": {
     "RestorerRole": {
@@ -64,6 +73,26 @@
         "Path": "/"
       }
     },
+      "TemplatesS3Bucket" : {
+          "Type" : "AWS::S3::Bucket",
+          "Properties" : {
+              "AccessControl" : "Private",
+              "BucketName" :   {
+                  "Fn::Join": [
+                      "",
+                      [
+                          "composer-templates-",
+                          { "Fn::FindInMap" :
+                            [ "EnvironmentMap",
+                              { "Ref" : "Stage" },
+                              "lowercase"]
+                          }
+                      ]
+                  ]
+              }
+          },
+          "DeletionPolicy" : "Retain"
+      },
     "RestorerDescribeEC2Policy": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
@@ -104,15 +133,15 @@
           "Statement": [
             {
               "Effect": "Allow",
-              "Action": ["s3:ListBucket"],
+              "Action": ["s3:ListBucket", "s3:GetObject"],
               "Resource": [
                 {
                   "Fn::Join": [
                     "",
                     [
                       "arn:aws:s3:::composer-snapshots-draft-",
-                      {"Ref": "Stage"}
-                    ]
+                       { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
+                    , "/*"]
                   ]
                 },
                 {
@@ -120,37 +149,24 @@
                     "",
                     [
                       "arn:aws:s3:::composer-snapshots-live-",
-                      {"Ref": "Stage"}
-                    ]
+                        { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
+                    , "/*"]
                   ]
                 }
               ]
             },
             {
-              "Effect": "Allow",
-              "Action": ["s3:GetObject"],
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:aws:s3:::composer-snapshots-draft-",
-                      {"Ref": "Stage"},
-                      "/*"
+                "Effect": "Allow",
+                "Action": ["s3:ListBucket", "s3:GetObject", "s3:PutObject"],
+                "Resource" : [{
+                    "Fn::Join": [
+                        "",
+                        [
+                            "arn:aws:s3:::composer-templates-",
+                            { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
+                            , "/*"]
                     ]
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:aws:s3:::composer-snapshots-live-",
-                      {"Ref": "Stage"},
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
+                }]
             }
           ]
         },
