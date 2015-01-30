@@ -11,6 +11,8 @@ import play.api.data.Forms._
 import com.gu.pandomainauth.action.AuthActions
 import com.gu.pandomainauth.model.AuthenticatedUser
 import helpers.CORSable
+import config.RestorerConfig
+import com.amazonaws.auth.BasicAWSCredentials
 
 trait PanDomainAuthActions extends AuthActions {
 
@@ -21,18 +23,21 @@ trait PanDomainAuthActions extends AuthActions {
     (authedUser.user.email endsWith ("@guardian.co.uk")) && authedUser.multiFactor
   }
 
-  override def authCallbackUrl: String = "https://" + config.getString("host").get + "/oauthCallback"
-
-  override lazy val domain: String = config.getString("pandomain.domain").get
-  override lazy val awsSecretAccessKey: String = config.getString("pandomain.aws.secret").get
-  override lazy val awsKeyId: String = config.getString("pandomain.aws.key").get
   override lazy val system: String = "composer-restorer"
+  override def authCallbackUrl: String = RestorerConfig.hostName + "/oauthCallback"
+  override lazy val domain: String = RestorerConfig.domain
+
+
+  override lazy val awsCredentials =
+    for (key <- RestorerConfig.accessKey;
+      secret <- RestorerConfig.secretKey)
+      yield { new BasicAWSCredentials(key, secret) }
 }
 
 
 object Application extends Controller with PanDomainAuthActions {
 
-  lazy val composer = config.getString("composer.domain").get
+  lazy val composer = RestorerConfig.composerDomain
 
   val urlForm = Form(
     "url" -> nonEmptyText
