@@ -64,7 +64,7 @@ object Application extends Controller with PanDomainAuthActions {
     }
   }
 
-  def info = AuthAction {
+  def info = Action {
     val info = Seq(
       "Hostname: " + RestorerConfig.hostName,
       "Composer Domain: " + RestorerConfig.composerDomain,
