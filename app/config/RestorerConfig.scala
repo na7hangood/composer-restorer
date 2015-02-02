@@ -11,6 +11,8 @@ object RestorerConfig extends AwsInstanceTags {
     case None => "DEV" // default to dev stage
   }
 
+  println(s"stage = $stage")
+
   val liveBucket: String = "composer-snapshots-live-" + stage.toLowerCase()
   val draftBucket: String = "composer-snapshots-draft-" + stage.toLowerCase()
   val templatesBucket: String = "composer-templates-" + stage.toLowerCase()
@@ -20,7 +22,7 @@ object RestorerConfig extends AwsInstanceTags {
     case "DEV" => "local.dev-gutools.co.uk"
     case x => x.toLowerCase() + ".dev-gutools.co.uk"
   }
-
+  println(s"domain = $domain")
   val composerDomain: String = "https://composer." + domain
 
   val hostName: String = "https://composer-restorer." + domain
