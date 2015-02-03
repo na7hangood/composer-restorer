@@ -1,5 +1,6 @@
 package controllers
 
+import play.Logger
 import play.api.mvc._
 
 import scala.concurrent.Future
@@ -32,7 +33,7 @@ trait PanDomainAuthActions extends AuthActions {
 
 
 object Application extends Controller with PanDomainAuthActions {
-
+  Logger.info("Application object")
   lazy val composer = RestorerConfig.composerDomain
 
   val urlForm = Form(

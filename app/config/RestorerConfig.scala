@@ -5,11 +5,12 @@ import play.api.Play.current
 import play.api._
 
 object RestorerConfig extends AwsInstanceTags {
-
-  lazy val stage: String = readTag("Stage") match {
-    case Some(value) => value
-    case None => "DEV" // default to dev stage
-  }
+  Logger.info("RestorerConfig")
+//  lazy val stage: String = readTag("Stage") match {
+//    case Some(value) => value
+//    case None => "DEV" // default to dev stage
+//  }
+  lazy val stage: String = "CODE"
 
   Logger.info(s"stage = $stage")
 
@@ -17,11 +18,12 @@ object RestorerConfig extends AwsInstanceTags {
   val draftBucket: String = "composer-snapshots-draft-" + stage.toLowerCase()
   val templatesBucket: String = "composer-templates-" + stage.toLowerCase()
 
-  val domain: String = stage match {
-    case "PROD" => "gutools.co.uk"
-    case "DEV" => "local.dev-gutools.co.uk"
-    case x => x.toLowerCase() + ".dev-gutools.co.uk"
-  }
+//  val domain: String = stage match {
+//    case "PROD" => "gutools.co.uk"
+//    case "DEV" => "local.dev-gutools.co.uk"
+//    case x => x.toLowerCase() + ".dev-gutools.co.uk"
+//  }
+  val domain: String = "code.dev-gutools.co.uk"
   Logger.info(s"domain = $domain")
   val composerDomain: String = "https://composer." + domain
 
