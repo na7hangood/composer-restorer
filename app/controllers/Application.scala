@@ -65,12 +65,21 @@ object Application extends Controller with PanDomainAuthActions {
   }
 
   def info = AuthAction {
+    val accessKeys = Seq(RestorerConfig.accessKey ++ RestorerConfig.secretKey).flatten
+    val creds: String = {
+        if (accessKeys.length >= 2) {
+          "Config keys"
+        } else {
+          "Default Credentials"
+        }
+    }
     val info = Seq(
       "Hostname: " + RestorerConfig.hostName,
       "Composer Domain: " + RestorerConfig.composerDomain,
       "Templates Bucket: " + RestorerConfig.templatesBucket,
       "Snapshots draft bucket: " + RestorerConfig.draftBucket,
-      "Snapshots live bucket: " + RestorerConfig.liveBucket
+      "Snapshots live bucket: " + RestorerConfig.liveBucket,
+      "Credentials: " + creds
     ).mkString("\n")
 
     Ok(info)
