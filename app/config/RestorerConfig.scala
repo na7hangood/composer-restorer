@@ -1,6 +1,7 @@
 package config
+
+import _root_.aws.AwsInstanceTags
 import play.api.Play.current
-import aws.AwsInstanceTags
 import play.api._
 
 object RestorerConfig extends AwsInstanceTags {
