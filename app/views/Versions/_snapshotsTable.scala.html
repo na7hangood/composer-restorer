@@ -1,10 +1,10 @@
-@(contentId: String, snapshots: List[String])
+@(contentId: String, snapshots: List[Snapshot])
 @import org.joda.time.Duration
 @import org.joda.time.DateTime
 @import org.joda.time.format.PeriodFormat
 @import org.joda.time.format.PeriodFormatterBuilder
 
-@timeSinceLastSnapshot(currentSnapshot: String, snapshots: List[String]) = @{
+@timeSinceLastSnapshot(currentSnapshot: Snapshot, snapshots: List[Snapshot]) = @{
   // Format like "1 day, 24 minutes and 12 seconds".
   val daysHoursMinutes = new PeriodFormatterBuilder()
     .appendDays()
@@ -20,13 +20,11 @@
   // If there is no previous snapshot we don't return a value.
   if (snapshots.indexOf(currentSnapshot) > 0) {
     // Extract the snapshots' time from the id.
-    val currentSnapshotTime = new DateTime(currentSnapshot.split("/")(1))
-    val lastSnapshotTime = new DateTime(snapshots(snapshots.indexOf(currentSnapshot)  - 1).split("/")(1))
+    val lastSnapshotTime = snapshots(snapshots.indexOf(currentSnapshot) - 1).savedAt
 
+    val timeBetweenSnapshots = new Duration(lastSnapshotTime, currentSnapshot.savedAt).toPeriod()
 
-    val timeBetweenSnapshots = new Duration(lastSnapshotTime, currentSnapshotTime).toPeriod()
-
-    // Regurn a formatted string.
+    // Return a formatted string.
     daysHoursMinutes.print(timeBetweenSnapshots) + " between snapshots"
   }
 }
@@ -43,9 +41,9 @@
   @for(snapshot <- snapshots.reverse) {
     <tr class="table-bordered table-hover snapshots-table__row">
       <td>@{ snapshots.indexOf(snapshot) + 1 }</td>
-      <td><a target="_blank" href="@routes.Versions.show(contentId, false, snapshot)">@{new DateTime(snapshot.split("/")(1)).toString("dd/MM/yyyy HH:mm:ss")}</a></td>
+      <td><a target="_blank" href="@routes.Versions.show(contentId, false, snapshot.key)">@{snapshot.savedAt.toString("dd/MM/yyyy HH:mm:ss")}</a></td>
       <td>
-        <button class="btn btn-default btn-xs" onclick="modal('@routes.Versions.show(contentId, false, snapshot)', '@contentId')">Restore</button>
+        <button class="btn btn-default btn-xs" onclick="modal('@routes.Versions.show(contentId, false, snapshot.key)', '@contentId')">Restore</button>
       </td>
     </tr>
     <tr class="time-difference">
