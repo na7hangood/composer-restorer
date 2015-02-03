@@ -140,7 +140,7 @@
     "RestorerSnapshotBucketPolicy": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": "RestorerSnapshotBucketPolicy",
+        "PolicyName": "RestorerBucketPolicy",
         "PolicyDocument": {
           "Statement": [
             {
