@@ -1,5 +1,6 @@
 package controllers
 
+import play.api.Logger
 import play.api.mvc._
 
 import scala.concurrent.Future
@@ -23,11 +24,16 @@ trait PanDomainAuthActions extends AuthActions {
   override def authCallbackUrl: String = RestorerConfig.hostName + "/oauthCallback"
   override lazy val domain: String = RestorerConfig.domain
 
+  Logger.info(s"panda domain = $domain")
+  Logger.info(s"panda key = ${RestorerConfig.pandomainKey}")
+  Logger.info(s"panda domain = ${RestorerConfig.pandomainSecret}")
 
   override lazy val awsCredentials =
     for (key <- RestorerConfig.pandomainKey;
       secret <- RestorerConfig.pandomainSecret)
-      yield { new BasicAWSCredentials(key, secret) }
+      yield { Logger.info("using basic credentials from config"); new BasicAWSCredentials(key, secret) }
+
+  if(awsCredentials.isEmpty) Logger.info("falling back to default provider chain for panda")
 }
 
 
