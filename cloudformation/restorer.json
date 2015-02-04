@@ -140,19 +140,43 @@
     "RestorerSnapshotBucketPolicy": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": "RestorerBucketPolicy",
+        "PolicyName": "RestorerSnapshotBucketPolicy",
         "PolicyDocument": {
           "Statement": [
             {
               "Effect": "Allow",
-              "Action": ["s3:ListBucket", "s3:GetObject"],
+              "Action": ["s3:ListBucket"],
               "Resource": [
                 {
                   "Fn::Join": [
                     "",
                     [
                       "arn:aws:s3:::composer-snapshots-draft-",
-                       { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
+                      { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::composer-snapshots-live-",
+                      { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::composer-snapshots-draft-",
+                      { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
                     , "/*"]
                   ]
                 },
@@ -161,24 +185,11 @@
                     "",
                     [
                       "arn:aws:s3:::composer-snapshots-live-",
-                        { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
+                      { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
                     , "/*"]
                   ]
                 }
               ]
-            },
-            {
-                "Effect": "Allow",
-                "Action": ["s3:ListBucket", "s3:GetObject", "s3:PutObject"],
-                "Resource" : [{
-                    "Fn::Join": [
-                        "",
-                        [
-                            "arn:aws:s3:::composer-templates-",
-                            { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
-                            , "/*"]
-                    ]
-                }]
             }
           ]
         },

@@ -31,9 +31,6 @@ class S3 {
     s3Client.getObject(new GetObjectRequest(bucketName, key))
   }
 
-  val listLiveSnapshots = listSnapshots(liveBucket)
-  val listDraftSnapshots = listSnapshots(draftBucket)
-
   private def listSnapshots(bucket: String, id: Option[String] = None): List[String] = {
     val request = new ListObjectsRequest().withBucketName(bucket)
     val requestWithId = id.map { i =>
