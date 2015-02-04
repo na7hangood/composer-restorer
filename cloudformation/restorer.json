@@ -37,6 +37,18 @@
       "Description": "Ip range for the office",
       "Type": "String",
       "Default": "77.91.248.0/21"
+    },
+    "PandomainDomain": {
+      "Description": "master domain the app is on",
+      "Type": "String"
+    },
+    "PandomainAwsKey": {
+      "Description": "aws key for pandomain bucket access",
+      "Type": "String"
+    },
+    "PandomainAwsSecret": {
+      "Description": "aws secret for pandomain bucket access",
+      "Type": "String"
     }
   },
   "Mappings": {
@@ -133,14 +145,38 @@
           "Statement": [
             {
               "Effect": "Allow",
-              "Action": ["s3:ListBucket", "s3:GetObject"],
+              "Action": ["s3:ListBucket"],
               "Resource": [
                 {
                   "Fn::Join": [
                     "",
                     [
                       "arn:aws:s3:::composer-snapshots-draft-",
-                       { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
+                      { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::composer-snapshots-live-",
+                      { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": ["s3:GetObject", "s3:PutObject"],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::composer-snapshots-draft-",
+                      { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
                     , "/*"]
                   ]
                 },
@@ -149,24 +185,11 @@
                     "",
                     [
                       "arn:aws:s3:::composer-snapshots-live-",
-                        { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
+                      { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
                     , "/*"]
                   ]
                 }
               ]
-            },
-            {
-                "Effect": "Allow",
-                "Action": ["s3:ListBucket", "s3:GetObject", "s3:PutObject"],
-                "Resource" : [{
-                    "Fn::Join": [
-                        "",
-                        [
-                            "arn:aws:s3:::composer-templates-",
-                            { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
-                            , "/*"]
-                    ]
-                }]
             }
           ]
         },
@@ -413,6 +436,11 @@
                 "(cd /home/restorer; tar xvzf composer-restorer.tgz)\n",
                 "chown -R restorer /home/restorer\n",
                 "chgrp -R restorer /home/restorer\n",
+                "sed -i \\\n",
+                "    -e 's,@PANDOMAIN_DOMAIN@,", {"Ref": "PandomainDomain"}, ",g' \\\n",
+                "    -e 's,@PANDOMAIN_AWS_KEY@,", {"Ref": "PandomainAwsKey"}, ",g' \\\n",
+                "    -e 's,@PANDOMAIN_AWS_SECRET@,", {"Ref": "PandomainAwsSecret"}, ",g' \\\n",
+                "    /etc/init/composer-restorer.conf\n",
                 "start composer-restorer\n"
               ]
             ]
