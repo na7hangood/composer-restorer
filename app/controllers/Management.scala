@@ -6,13 +6,13 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import config.RestorerConfig
 
-object Management extends Controller {
+object Management extends Controller with PanDomainAuthActions {
 
   def healthCheck = Action {
     Ok("Ok")
   }
 
-  def info = Action {
+  def info = AuthAction {
     val info =
       s"""
       |Hostname: ${RestorerConfig.hostName}
