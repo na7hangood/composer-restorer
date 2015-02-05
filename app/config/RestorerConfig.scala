@@ -7,6 +7,8 @@ import play.api._
 
 object RestorerConfig extends AwsInstanceTags {
 
+  // we use the two sets of parameters here so that the secretKey doesn't
+  // end up in the case class's toString and other methods
   case class AWSCredentials(accessKey:String)(val secretKey:String) {
     lazy val awsApiCreds = new BasicAWSCredentials(accessKey, secretKey)
   }
