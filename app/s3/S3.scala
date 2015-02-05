@@ -15,14 +15,13 @@ class S3 {
 
   lazy val draftBucket: String = config.draftBucket
   lazy val liveBucket: String = config.liveBucket
-  val accessKeys = Seq(config.accessKey ++ config.secretKey).flatten
 
-  val s3Client = {
-    if (accessKeys.length == 2)
-      new AmazonS3Client(new BasicAWSCredentials(accessKeys(0), accessKeys(1)))
-    else
+  val s3Client =
+    config.creds.map { c =>
+      new AmazonS3Client(c.awsApiCreds)
+    } getOrElse {
       new AmazonS3Client(new DefaultAWSCredentialsProviderChain())
-  }
+    }
 
   val getLiveSnapshot: String => S3Object = getObject(_, liveBucket)
   val getDraftSnapshot: String => S3Object = getObject(_, draftBucket)
