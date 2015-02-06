@@ -169,7 +169,17 @@
                       { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
                     ]
                   ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::composer-templates-",
+                      { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
+                    ]
+                  ]
                 }
+
               ]
             },
             {
@@ -193,7 +203,17 @@
                       { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
                     , "/*"]
                   ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::composer-templates-",
+                      { "Fn::FindInMap" : [ "EnvironmentMap", { "Ref" : "Stage" }, "lowercase"]}
+                    , "/*"]
+                  ]
                 }
+
               ]
             }
           ]
