@@ -1,5 +1,6 @@
 package controllers
 
+import play.Logger
 import play.api.mvc._
 
 import scala.concurrent.Future
@@ -16,7 +17,11 @@ import com.amazonaws.auth.BasicAWSCredentials
 
 trait PanDomainAuthActions extends AuthActions {
   override def validateUser(authedUser: AuthenticatedUser): Boolean = {
-    (authedUser.user.email endsWith ("@guardian.co.uk")) && authedUser.multiFactor
+    RestorerConfig.whitelistMembers.contains(authedUser.user.email) && authedUser.multiFactor
+  }
+
+  override def showUnauthedMessage(message: String)(implicit request: RequestHeader): Result = {
+    Results.Redirect(controllers.routes.Login.authError(message))
   }
 
   override lazy val system: String = "composer-restorer"
