@@ -15,6 +15,6 @@ object Login extends Controller with PanDomainAuthActions {
   }
 
   def authError(message: String) = Action.async { implicit request =>
-    ???
+    Future(Forbidden(views.html.Login.authError(message)))
   }
 }

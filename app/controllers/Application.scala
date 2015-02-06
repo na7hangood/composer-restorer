@@ -20,10 +20,8 @@ trait PanDomainAuthActions extends AuthActions {
     RestorerConfig.whitelistMembers.contains(authedUser.user.email) && authedUser.multiFactor
   }
 
-
   override def showUnauthedMessage(message: String)(implicit request: RequestHeader): Result = {
-    super.showUnauthedMessage(message)
-
+    Results.Redirect(controllers.routes.Login.authError(message))
   }
 
   override lazy val system: String = "composer-restorer"
