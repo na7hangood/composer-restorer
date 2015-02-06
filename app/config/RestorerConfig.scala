@@ -47,4 +47,6 @@ object RestorerConfig extends AwsInstanceTags {
   val pandomainKey: Option[String] = config.getString("pandomain.aws.key")
   val pandomainSecret: Option[String] = config.getString("pandomain.aws.secret")
   val pandomainCreds = AWSCredentials(pandomainKey, pandomainSecret)
+  lazy val whitelistMembers: Set[String] = config.getStringSeq("whitelist.members").getOrElse(Nil).toSet
+
 }

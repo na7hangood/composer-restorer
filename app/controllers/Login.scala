@@ -13,4 +13,8 @@ object Login extends Controller with PanDomainAuthActions {
   def logout = Action.async { implicit request =>
     Future(processLogout)
   }
+
+  def authError(message: String) = Action.async { implicit request =>
+    ???
+  }
 }
