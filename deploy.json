@@ -20,7 +20,7 @@
   },
   "recipes": {
     "default": {
-      "depends": ["artifactUploadOnly", "deployOnly"]
+      "depends": ["restorer-cloudformation", "artifactUploadOnly", "deployOnly"]
     },
 
     "deployOnly": {
