@@ -16,7 +16,7 @@ function getTextFields(version) {
     function extractTextField(element) {
         return element.fields.text;
     }
-    console.log('elements:', version.preview.blocks[0].elements.length)
+
     return version.preview.blocks[0].elements
         .filter(isTextElement).map(extractTextField);
 }
@@ -29,7 +29,6 @@ module.exports = function() {
         var version = JSON.parse(response.text);
 
         var textFields = getTextFields(version);
-        console.log(textFields)
 
         var versionTemplate = require('./version.handlebars');
         var versionHTML = versionTemplate({textFields: textFields});

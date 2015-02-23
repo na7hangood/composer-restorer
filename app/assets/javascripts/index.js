@@ -6,9 +6,8 @@ var handlebars = require('handlebars');
 
 var helpers = require('./helpers');
 
-var versionModule = require('./version.js');
+var showVersionModule = require('./show-version.js');
 
-window.versionModule = versionModule;
 
 // Set environment specific constants.
 var COMPOSER_URL = helpers.getComposerUrl();
@@ -22,9 +21,9 @@ function restore(archivedVersionPath, contentId, success, failure) {
             .send(snapshot)
             .end(function(error, response) {
                 if (response.ok) {
-                    success(contentId)
+                    success(contentId);
                 } else {
-                    failure(contentId)
+                    failure(contentId);
                 }
         });
     }
@@ -61,7 +60,7 @@ function success(contentId) {
     var successTemplate = handlebars.compile(rawSuccessTemplate);
 
     successNotification.innerHTML = successTemplate({composerUrl: COMPOSER_URL, contentId: contentId});
-    window.location.hash = '#!'
+    window.location.hash = '#!';
 }
 
 function failure(contentId) {
@@ -69,7 +68,7 @@ function failure(contentId) {
     failureNotification.classList.remove('hidden');
 
     failureNotification.innerHTML = 'There was an error restoring the snapshot.';
-    window.location.hash = '#!'
+    window.location.hash = '#!';
 }
 
 function modal(archivedVersionPath, contentId) {
@@ -81,7 +80,7 @@ function modal(archivedVersionPath, contentId) {
 
     // Set up listener on criteria.
     toArray(document.querySelectorAll('[data-component-restore-criteria]')).forEach(function(checkbox) {
-        checkbox.addEventListener('click', enabledIfAllChecked)
+        checkbox.addEventListener('click', enabledIfAllChecked);
     });
 
     // Set up listener on #restore-btn.
@@ -110,3 +109,36 @@ function enabledIfAllChecked() {
     restoreBtn.disabled = !allChecked;
 }
 
+
+/**
+ *
+ * Router
+ *
+ * Simply routes a URL pattern to a function.
+ *
+ * Enables us to keep using server-side routing for now and then simply load
+ * page-specific JS with the help of this router.
+ *
+ * It picks the FIRST matching route and ignores any subsequent matches.
+ */
+
+var routes = [
+    {
+        name: 'Show readable version',
+        pattern: 'versions/version/readable',
+        action: showVersionModule
+    }
+];
+
+// Uses Array.prototype.some to only find the first matching route.
+routes.some(function(route) {
+    // TODO: Use more proper router. Just a very simple matching algorithm atm.
+    if (window.location.pathname.indexOf(route.pattern) !== -1) {
+        console.log('ROUTER:: Matched "' + route.name + '"');
+        route.action();
+
+        return true;
+    } else {
+        return false;
+    }
+});
