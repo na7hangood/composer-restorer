@@ -22,11 +22,19 @@ function getTextFields(version) {
 }
 
 /**
+ * Helpers
+ */
+
+function getJSONVersionPath() {
+    return document.getElementById('versionBody').dataset.jsonUrl;
+}
+
+/**
  * Render version
  */
 
-module.exports = function() {
-    var versionPath = "https://composer-restorer.local.dev-gutools.co.uk/content/54e735a1e4b043eebbe55d84/versions/version?isLive=false&versionId=5%2F4%2Fe%2F7%2F3%2F5%2F54e735a1e4b043eebbe55d84%2F2015-02-23T11%3A15%3A46.269Z";
+function renderVersion() {
+    var versionPath = getJSONVersionPath();
     request.get(versionPath, function(error, response) {
         var version = JSON.parse(response.text);
 
@@ -39,3 +47,5 @@ module.exports = function() {
         versionBodyEl.innerHTML = versionHTML;
     });
 };
+
+module.exports = renderVersion;

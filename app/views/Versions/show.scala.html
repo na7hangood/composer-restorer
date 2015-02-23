@@ -1,11 +1,14 @@
-@(contentId: String, versionId: String)
+@(contentId: String, versionId: String, jsonURL: String)
 
 @import views.html.Versions._
 
 
 @main("Version") {
     <h2>Version</h2>
-    <div data-content-id="@contentId" data-version-id="@versionId"></div>
-
-    <div id="versionBody" class="version-body"></div>
+    <div id="versionBody"
+         data-content-id="@contentId"
+         data-version-id="@versionId"
+         data-json-url="@jsonURL"
+         class="version-body">
+    </div>
 }

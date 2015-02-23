@@ -47,7 +47,9 @@ object Versions extends Controller with PanDomainAuthActions {
   }
 
   def showReadable(contentId: String, isLive: Boolean, versionId: String) = AuthAction {
-    Ok(views.html.Versions.show(contentId, versionId))
+    val showActionPath = routes.Versions.show(contentId, isLive, versionId).url
+    Ok(views.html.Versions.show(contentId, versionId, showActionPath))
+
   }
 
   def snapShotAsString(snapshot: S3Object) = {
