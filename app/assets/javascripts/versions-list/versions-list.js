@@ -48,7 +48,6 @@ function restore(archivedVersionPath, contentId, success, failure) {
 var modalTemplate = require('./modal.handlebars');
 var successNotification = document.getElementById('notification-success');
 var failureNotification = document.getElementById('notification-failure');
-console.log('testing')
 
 function success(contentId) {
     failureNotification.classList.add('hidden');
@@ -91,10 +90,6 @@ function modal(archivedVersionPath, contentId) {
     window.location.hash = '#modal-text';
 }
 
-// It ain't pretty exposing it on `window`, but let's keep it simple for now.
-// Separating things into a single page app and an API would enable an equally
-// simple but nice solution.
-window.modal = modal;
 
 function enabledIfAllChecked() {
     var modalEl = document.getElementById('restore-modal');
@@ -106,3 +101,12 @@ function enabledIfAllChecked() {
 
     restoreBtn.disabled = !allChecked;
 }
+
+// It ain't pretty exposing it on `window`, but let's keep it simple for now.
+// Separating things into a single page app and an API would enable an equally
+// simple but nice solution.
+function exposeModal() {
+    window.modal = modal;
+}
+
+module.exports = exposeModal;
