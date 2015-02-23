@@ -408,6 +408,7 @@ gu-correct {
     /* Remove default headline */
     outline: none;
 
+    margin-top: 5vh;
     margin-left: 10vw;
     margin-right: 10vw;
 }
@@ -415,7 +416,7 @@ gu-correct {
 .version-body__text-element {
     background-color: #F6F6F6;
     padding: 20px;
-    padding-left: 70px;
+    padding-left: 5vw;
 
     margin-bottom: 30px;
 }
