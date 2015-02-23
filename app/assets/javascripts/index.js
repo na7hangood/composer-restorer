@@ -6,6 +6,10 @@ var handlebars = require('handlebars');
 
 var helpers = require('./helpers');
 
+var versionModule = require('./version.js');
+
+window.versionModule = versionModule;
+
 // Set environment specific constants.
 var COMPOSER_URL = helpers.getComposerUrl();
 var API_URL = helpers.getApiUrl();

@@ -1,0 +1,12 @@
+@(contentId: String, versionId: String)
+
+@import views.html.Versions._
+
+
+@main("Version") {
+    <h2>Version</h2>
+    <div data-content-id="@contentId" data-version-id="@versionId"></div>
+
+    <div id="versionBody" class="version-body"></div>
+
+}

@@ -46,6 +46,10 @@ object Versions extends Controller with PanDomainAuthActions {
     Ok(snapShotAsString(snapshot))
   }
 
+  def showReadable(contentId: String, isLive: Boolean, versionId: String) = AuthAction {
+    Ok(views.html.Versions.show(contentId, versionId))
+  }
+
   def snapShotAsString(snapshot: S3Object) = {
     Source.fromInputStream(snapshot.getObjectContent(), "UTF-8").mkString
   }

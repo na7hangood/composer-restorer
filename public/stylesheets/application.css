@@ -391,3 +391,31 @@ html {
     float: right;
     margin-left: 6px;
 }
+
+gu-note {
+    background-color: cyan;
+}
+
+gu-flag {
+    background-color: #f0ad4e;
+}
+
+gu-correct {
+    background-color: greenyellow;
+}
+
+.version-body {
+    /* Remove default headline */
+    outline: none;
+
+    margin-left: 10vw;
+    margin-right: 10vw;
+}
+
+.version-body__text-element {
+    background-color: #F6F6F6;
+    padding: 20px;
+    padding-left: 70px;
+
+    margin-bottom: 30px;
+}
