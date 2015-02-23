@@ -1,6 +1,5 @@
 var request = require('superagent');
 var handlebars = require('handlebars');
-var helpers = require('./helpers');
 
 
 /**
