@@ -1,44 +1,13 @@
 // Bundled by browserify and put in 'public/'. We don't use the Play Asset pipeline.
 
-var request = require('superagent');
 var toArray = require("to-array");
 var handlebars = require('handlebars');
 
 var helpers = require('../helpers');
+var restorerService = require('../restorer-service');
 
 // Set environment specific constants.
 var COMPOSER_URL = helpers.getComposerUrl();
-var API_URL = helpers.getApiUrl();
-
-function restore(archivedVersionPath, contentId, success, failure) {
-    function updateContent(snapshot) {
-        request.put(helpers.restoreContentUrlFor(contentId))
-            .withCredentials()
-            .set('Content-Type', 'application/json;charset=utf-8') // we need to set this
-            .send(snapshot)
-            .end(function(error, response) {
-                if (response.ok) {
-                    success(contentId);
-                } else {
-                    failure(contentId);
-                }
-            });
-    }
-
-    request.get(archivedVersionPath, function(error, response) {
-        var snapshot = response.text;
-
-        // To test restoring you can overwrite a local piece of content, e.g by doing:
-        //snapshot = JSON.parse(snapshot);
-        //snapshot.id = 'id-of-local-content-here';
-        //snapshot = JSON.stringify(snapshot);
-
-        updateContent(snapshot);
-    });
-
-}
-
-
 
 /**
  *  Restore confirmation
@@ -83,7 +52,7 @@ function modal(archivedVersionPath, contentId) {
     // Set up listener on #restore-btn.
     document.getElementById('restore-btn').addEventListener('click', function(e) {
         var dataset = e.target.dataset;
-        restore(dataset.archivedVersionPath, dataset.contentId, success, failure);
+        restorerService.restore(dataset.archivedVersionPath, dataset.contentId, success, failure);
     });
 
     // Show modal.
