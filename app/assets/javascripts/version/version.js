@@ -1,5 +1,6 @@
-var request = require('superagent');
 var handlebars = require('handlebars');
+
+var restorerService = require('../restorer-service');
 
 var versionTemplate = require('./version.handlebars');
 
@@ -37,7 +38,8 @@ function getTextFields(version) {
 
 function renderVersion() {
     var versionPath = getJSONVersionPath();
-    request.get(versionPath, function(error, response) {
+
+    restorerService.getArchivedVersion(versionPath, function(error, response) {
         var version = JSON.parse(response.text);
 
         var textFields = getTextFields(version);
