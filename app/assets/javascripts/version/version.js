@@ -1,24 +1,8 @@
 var request = require('superagent');
 var handlebars = require('handlebars');
 
+var versionTemplate = require('./version.handlebars');
 
-/**
- * Version model
- */
-
-function isTextElement(element) {
-    return element.elementType === 'text';
-}
-
-
-function getTextFields(version) {
-    function extractTextField(element) {
-        return element.fields.text;
-    }
-
-    return version.preview.blocks[0].elements
-        .filter(isTextElement).map(extractTextField);
-}
 
 /**
  * Helpers
@@ -27,6 +11,25 @@ function getTextFields(version) {
 function getJSONVersionPath() {
     return document.getElementById('versionBody').dataset.jsonUrl;
 }
+
+function extractTextField(element) {
+    return element.fields.text;
+}
+
+function isTextElement(element) {
+    return element.elementType === 'text';
+}
+
+
+/**
+ * Version model
+ */
+
+function getTextFields(version) {
+    return version.preview.blocks[0].elements
+        .filter(isTextElement).map(extractTextField);
+}
+
 
 /**
  * Render version
@@ -39,7 +42,6 @@ function renderVersion() {
 
         var textFields = getTextFields(version);
 
-        var versionTemplate = require('./version.handlebars');
         var versionHTML = versionTemplate({textFields: textFields});
 
         var versionBodyEl = document.getElementById('versionBody');
