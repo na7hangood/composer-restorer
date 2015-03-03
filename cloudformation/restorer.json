@@ -356,7 +356,7 @@
         "MaxSize": "2",
         "DesiredCapacity": "1",
         "HealthCheckType": "ELB",
-        "HealthCheckGracePeriod": 300,
+        "HealthCheckGracePeriod": 900,
         "LoadBalancerNames": [{"Ref": "RestorerLoadBalancer"}],
         "Tags": [
           {
