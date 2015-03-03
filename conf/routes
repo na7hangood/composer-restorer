@@ -15,6 +15,7 @@ GET            /assets/*file                               controllers.Assets.at
 
 # Versions
 GET            /content/:contentId/versions/version        controllers.Versions.show(contentId: String, isLive: Boolean, versionId: String)
+GET            /content/:contentId/versions/version/readable        controllers.Versions.showReadable(contentId: String, isLive: Boolean, versionId: String)
 GET            /content/:contentId/versions                controllers.Versions.index(contentId: String)
 
 
