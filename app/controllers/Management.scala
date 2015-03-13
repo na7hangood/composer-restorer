@@ -9,7 +9,7 @@ import config.RestorerConfig
 object Management extends Controller with PanDomainAuthActions {
 
   def healthCheck = Action {
-    Ok("Ok")
+    ServiceUnavailable("Deliberately broken")
   }
 
   def info = AuthAction {
