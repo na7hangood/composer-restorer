@@ -38,6 +38,11 @@ object RestorerConfig extends AwsInstanceTags {
 
   val hostName: String = "https://composer-restorer." + domain
 
+  val corsableDomains = RestorerConfig.stage match {
+    case "PROD" | "DEV" => Seq(RestorerConfig.composerDomain)
+    case _ => Seq("release", "code", "qa").map(x => s"https://composer.$x.$domain")
+  }
+
   lazy val config = play.api.Play.configuration
 
   val accessKey: Option[String] = config.getString("AWS_ACCESS_KEY")
