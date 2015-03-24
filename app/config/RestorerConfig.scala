@@ -40,7 +40,7 @@ object RestorerConfig extends AwsInstanceTags {
 
   val corsableDomains = RestorerConfig.stage match {
     case "PROD" | "DEV" => Seq(RestorerConfig.composerDomain)
-    case _ => Seq("release", "code", "qa").map(x => s"https://composer.$x.$domain")
+    case _ => Seq("release", "code", "qa").map(x => s"https://composer.$x.dev-gutools.co.uk")
   }
 
   lazy val config = play.api.Play.configuration
