@@ -57,11 +57,11 @@ object Application extends Controller with PanDomainAuthActions {
 
   def preflight(routes: String) = CORSable(RestorerConfig.corsableDomains: _*) {
     Action { implicit req =>
-      val requestedHeaders = req.headers("Access-Control-Request-Headers")
+      val requestedHeaders = req.headers.get("Access-Control-Request-Headers")
 
       NoContent.withHeaders(
         CORSable.CORS_ALLOW_METHODS -> "GET, DELETE, PUT",
-        CORSable.CORS_ALLOW_HEADERS -> requestedHeaders)
+        CORSable.CORS_ALLOW_HEADERS -> requestedHeaders.getOrElse(""))
     }
   }
 
