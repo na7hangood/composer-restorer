@@ -11,7 +11,7 @@ case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
 
     val headers = request.headers.get("Origin").map { origin =>
       if(origins.contains(origin)) {
-        List("Access-Control-Allow-Origin" -> origin, "Access-Control-Allow-Credentials" -> "true")
+        List(CORSable.CORS_ALLOW_ORIGIN -> origin, CORSable.CORS_CREDENTIALS -> "true")
       } else { Nil }
     }
 
