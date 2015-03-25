@@ -3,7 +3,7 @@ package controllers
 import com.amazonaws.services.s3.model.S3Object
 import org.joda.time.DateTime
 import play.api.mvc._
-import play.api.libs.json.Json
+import play.api.libs.json._
 import scala.collection.JavaConversions._
 
 import s3.S3
@@ -54,6 +54,18 @@ object Versions extends Controller with PanDomainAuthActions {
 
   def snapShotAsString(snapshot: S3Object) = {
     Source.fromInputStream(snapshot.getObjectContent(), "UTF-8").mkString
+  }
+
+  def getJSONVersionsCollection(contentId: String) = AuthAction {
+
+    val s3                    = new S3
+    val draftVersionKeys      = s3.listDraftForId(contentId)
+    val draftVersions         = draftVersionKeys.map(Snapshot)
+    val draftVersionsContent  = Json.toJson(draftVersions.map {ss =>
+      (Json.parse(snapShotAsString(s3.getDraftSnapshot(ss.key))))
+    })
+
+    Ok(draftVersionsContent)
   }
 
 }

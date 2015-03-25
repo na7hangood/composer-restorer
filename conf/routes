@@ -29,3 +29,6 @@ OPTIONS        /*all                                       controllers.Applicati
 # Health check
 GET            /management/healthcheck                     controllers.Management.healthCheck
 GET            /management/info                            controllers.Management.info
+
+# API
+GET           /api/1/versions/:contentId                   controllers.Versions.getJSONVersionsCollection(contentId: String)
