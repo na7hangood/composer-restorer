@@ -5,7 +5,7 @@ name := "composer-restorer"
 version := "0.0.1"
 
 libraryDependencies ++= Seq(
-  "com.gu" %% "pan-domain-auth-play" % "0.2.3",
+  "com.gu" %% "pan-domain-auth-play" % "0.2.6",
   ws
 )
 
