@@ -43,7 +43,7 @@ object Versions extends Controller with PanDomainAuthActions {
 
     val snapshot = if (isLive) s3.getLiveSnapshot(versionPath) else s3.getDraftSnapshot(versionPath)
 
-    Ok(snapShotAsString(snapshot))
+    Ok(snapShotAsString(snapshot)).as(JSON)
   }
 
   def showReadable(contentId: String, isLive: Boolean, versionId: String) = AuthAction {
